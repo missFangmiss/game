@@ -24,3 +24,30 @@ export default {
 	}
 }
 </script>
+<style>
+	.slide-fade-enter-active {
+		transition: all .5s ease;
+	}
+
+	.slide-fade-enter, .slide-fade-leave-to{
+		transform: translateX(10px);
+		opacity: 0;
+	}
+	#app{
+		width: 100%;
+		min-height: 100vh;
+		background: #fff;
+		max-width: 768px;
+		margin: auto;
+	}
+	.room{
+        color: #888888;
+        font-size: 14px;
+        position: fixed;
+        bottom: 30px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        text-align: center;
+    }
+</style>

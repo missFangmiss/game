@@ -23,7 +23,7 @@ exports.styleLoaders = function (options) {
         var use = ['vue-style-loader', cssLoader]
 
         // rem适配
-        // use.push(getPostCssLoader(options.sourceMap))
+        use.push(getPostCssLoader(options.sourceMap))
 
         if (loader) {
             use.push({
@@ -68,7 +68,7 @@ function getPostCssLoader(sourceMap) {
                 }),
                 require('postcss-pxtorem')({
                     // rem 基准度量 16px ≈ 1rem, 数值越小则css数值越大, 反之越小
-                    rootValue: 16, 
+                    rootValue: 37.5, 
                     propList: ['*']
                 })
             ]

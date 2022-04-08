@@ -15,7 +15,12 @@ module.exports = {
     plugins: [
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-transform-runtime',
-        '@vue/babel-plugin-transform-vue-jsx'
+        '@vue/babel-plugin-transform-vue-jsx',
+        ['import', {
+            libraryName: 'vant',
+            libraryDirectory: 'es',
+            style: true
+          }, 'vant']
        
     ],
     comments: false,
