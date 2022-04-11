@@ -1,7 +1,7 @@
 <template>
     <div class="side-content">
         <div class="logo">
-            后台管理系统
+            OPTION GAME
         </div>
         <a-menu theme="dark" mode="inline" 
             :default-selected-keys="['home1']"
@@ -35,46 +35,42 @@ export default {
                    key: 'home1',
                    title: '首页',
                    icon: 'home',
-               },{
+               },
+               {
+                   key: 'daily',
+                   title: '按日统计',
+                   icon: 'fund',
+               },
+               {
+                   key: 'order',
+                   title: '订单列表',
+                   icon: 'schedule',
+               },
+               {
+                   key: 'glist',
+                   title: '游戏列表',
+                   icon: 'audit',
+               },
+               {
                    key: 'setting',
-                   title: '系统管理',
-                   icon: 'team',
+                   title: '系统配置',
+                   icon: 'setting',
                    children: [
                         {
-                            key: 'user',
-                            title: '用户管理',
-                        },{
-                            key: 'role',
-                            title: '角色管理',
-                        }                       
-                   ]
-               },{
-                   key: 'activity',
-                   title: '活动管理',
-                   icon: 'team',
-                   children: [
+                            key: 'pay',
+                            title: '支付配置',
+                        },
                         {
-                            key: 'activity',
-                            title: '活动配置',
+                            key: 'set',
+                            title: '游戏配置',
                         }                      
                    ]
-               },{
-                   key: 'our',
-                   title: '关于我们',
-                   icon: 'user',
-                //    children: [
-                //         {
-                //             key: 'our',
-                //             title: '关于我们',
-                //         }                      
-                //    ]
                }
            ]
        } 
     },
     methods: {
         handleClick(e){
-            // this.$router.push({name:e.key})
             this.$router.replace({ path: '/'+e.key });
         }
     }
@@ -82,5 +78,4 @@ export default {
 </script>
 <style lang="less" rel="stylesheet/less">
     .logo{color: #fff;font-size: 20px;font-weight: bold;;padding:0 20px;height:64px;line-height:64px;background: #022140;}
-    // .side-content{height: 100%;}
 </style>

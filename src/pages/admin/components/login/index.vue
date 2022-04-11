@@ -1,7 +1,7 @@
 <template>
 	<div class="page-login">
 		<div class="login-title">
-			线上展厅管理平台
+			GUESS NUMBER 管理平台
         </div> 
 		<div class="login-content">
 			<div class="login-name">登录</div>
@@ -23,7 +23,7 @@
 						<a-icon slot="prefix" type="lock" />
 					</a-input-password>
 				</a-form-model-item>
-				<a-form-model-item label="" prop="code">
+				<!-- <a-form-model-item label="" prop="code">
 					<a-row>
 						<a-col :span="14">
 							<a-input v-model="form.code" placeholder="验证码"  class="input-style" size="large" >
@@ -34,7 +34,7 @@
 							<div class="code_img"></div>
 						</a-col>
 					</a-row>
-				</a-form-model-item>
+				</a-form-model-item> -->
 				<a-form-model-item>
 					<a-button type="primary" html-type="submit"  :loading="loading"  class="input-style" size="large" > 登录 </a-button>
 				</a-form-model-item>
@@ -76,7 +76,6 @@ export default {
 		height: 100%;
 		.login-title{
 			width: 100%;
-			height: 10.875rem;
 			font-size: 32px;
 			font-weight: bold;
 			vertical-align: middle;
@@ -105,7 +104,7 @@ export default {
 			z-index: 1;
 			top: 10%;
 			flex-wrap: wrap;
-			margin: 0 auto;
+			margin: 80px auto;
 			width:460px;
 			text-align: center;
 			padding: 15px 35px 30px ;

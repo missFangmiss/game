@@ -1,5 +1,5 @@
 <template>
-    <div style="font-size: 16px;">欢迎使用线上展厅管理后台</div>
+    <div style="font-size: 16px;">欢迎使用GUESS NUMBER管理后台</div>
 </template>
 <script>
 export default {

@@ -23,64 +23,58 @@ export default [
                     'spa@comp_admin/home/index.vue'
                 )
             },{
-            	path: '/user',
-                name: "user",
+            	path: '/daily',
+                name: "daily",
                 meta: {
-                    title: '用户管理',
+                    title: '按日统计',
                     // requireAuth: true,
                 },
                 component: () => import(
-                    'spa@comp_admin/user/index.vue'
+                    'spa@comp_admin/daily/index.vue'
                 )
-            },{
-            	path: '/addUser',
-                name: "addUser",
+            }
+            ,{
+            	path: '/order',
+                name: "order",
                 meta: {
-                    title: '新增用户',
+                    title: '订单列表',
                     // requireAuth: true,
                 },
                 component: () => import(
-                    'spa@comp_admin/user/addUser/index.vue'
+                    'spa@comp_admin/order/index.vue'
                 )
-            },{
-            	path: '/role',
-                name: "role",
+            }
+            ,{
+            	path: '/glist',
+                name: "glist",
                 meta: {
-                    title: '角色管理',
+                    title: '游戏列表',
                     // requireAuth: true,
                 },
                 component: () => import(
-                    'spa@comp_admin/role/index.vue'
+                    'spa@comp_admin/glist/index.vue'
                 )
-            },{
-            	path: '/activity',
-                name: "activity",
+            },
+            ,{
+            	path: '/pay',
+                name: "pay",
                 meta: {
-                    title: '活动配置',
+                    title: '支付配置',
                     // requireAuth: true,
                 },
                 component: () => import(
-                    'spa@comp_admin/activity/index.vue'
+                    'spa@comp_admin/setting/paySet/index.vue'
                 )
-            },{
-            	path: '/live',
-                name: "live",
+            },
+            ,{
+            	path: '/set',
+                name: "set",
                 meta: {
-                    title: '图文直播',
+                    title: '游戏配置',
                     // requireAuth: true,
                 },
                 component: () => import(
-                    'spa@comp_admin/activity/live/index.vue'
-                )
-            },{
-            	path: '/our',
-                name: "our",
-                meta: {
-                    title: '关于我们',
-                    // requireAuth: true,
-                },
-                component: () => import(
-                    'spa@comp_admin/our/index.vue'
+                    'spa@comp_admin/setting/gameSet/index.vue'
                 )
             }
         ]
