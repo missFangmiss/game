@@ -1,58 +1,99 @@
 <template>
     <div class="game">
-        <div class="priceBox">
-            <div class="price">
-                <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
-                <div class="priceShow">38960.2 <p class="lastNum">9</p></div>
+        <div class="gameTop">
+            <div class="priceBox">
+                <div class="price">
+                    <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
+                    <div class="priceShow">38960.2 <p class="lastNum">9</p></div>
+                </div>
+                <!-- <p class="desc">Guess the last number of the BTC price after the game starts, Earn up to ₹950 if win.</p> -->
+                <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
+                <p class="startDesc">Remaining Time</p>
+                <p class="countDown"><span>21</span>seconds</p>
             </div>
-            <!-- <p class="desc">Guess the last number of the BTC price after the game starts, Earn up to ₹950 if win.</p> -->
-            <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
-            <p class="startDesc">Remaining Time</p>
-            <p class="countDown"><span>21</span>seconds</p>
-        </div>
-        <div class="countBox">Need at least 2  more players to start</div>
-        <div class="numChooseBox">
-            <div v-for="(item,index) in list" :key="index" class="numberBox" @click="onChooseNum">
-                <div :class="['number',{choosen:item.name,isMeChoose:chosedNum==item.num}]">{{item.num}}</div>
-                <div :class="['shadow',{isNumShadow:luckyNum==item.num}]"></div>
-                <p class="name">{{item.name}}</p>
+            <div class="_container">
+                <div class="flip">
+                    <p class="_waiting _front">Need at least 2  more players to start</p>
+                    <p class="_waiting _back">New player : Calcutta joins the game</p>
+                </div>
             </div>
+            
+            <div class="numChooseBox">
+                <div v-for="(item,index) in list" :key="index" class="numberBox" @click="onChooseNum(item.num)">
+                    <div :class="['number',{choosen:item.name,isMeChoose:chosedNum==item.num}]">{{item.num}}</div>
+                    <div :class="['shadow',{isNumShadow:luckyNum==item.num}]"></div>
+                    <p class="name">{{item.name}}</p>
+                </div>
+            </div>
+            <!-- <div>
+                <van-cell title="Your chosen number" value="" :border="false" class="boxCell" title-class="cellTitle">
+                    <p class="chosedNumber">{{chosedNum}}</p>
+                </van-cell>
+                <van-cell title="Invest" value="₹100" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Earn up to" value="₹190" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+            </div> -->
+            <p class="tips">Please click above to select a number</p>
         </div>
-        <p class="tips">Please click above to select a number</p>
         <p class="room">GAME ID : GN10294850</p>
         <van-popup v-model="show" closeable position="bottom" >
             <div class="confirmBox">
                 <van-cell title="Your chosen number" value="" :border="false" class="boxCell" title-class="cellTitle">
-                    <p class="chosedNumber">2</p>
+                    <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
                 <van-cell title="Invest" value="₹100" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <van-cell title="Profit" value="95%" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
-                <div class="popBtn">Confirm</div>
+                <div class="popBtn" @click="handleChoose">Confirm</div>
             </div>
-                
         </van-popup>
+        <van-dialog 
+            v-model="isOut" title="OUT" 
+            show-cancel-button 
+            cancelButtonText="Cancel" 
+            confirmButtonText="Join a game" 
+            @cancel="handleCancel"
+            @confirm="handleConfirm"
+            confirmButtonColor="#4A5E94">
+            <p class="_out">You didn't choose a number before the game started</p>
+        </van-dialog>
 
     </div>
 </template>
 <script>
-import { Popup, Cell } from 'vant';
+import { Popup, Cell, Dialog } from 'vant';
 export default {
     name: 'game',
     components:{
         [Popup.name]: Popup,
         [Cell.name]: Cell,
+        [Dialog.Component.name]: Dialog.Component,
+    },
+    mounted(){
+        // setTimeout(() => {
+        //     this.isOut = true;
+        // }, 5000);
     },
     data(){
         return{
             luckyNum:5,
-            chosedNum:2,
+            chosedNum:-1,
             show:false,
+            isOut:false,
             list:[{num:1},{num:2},{num:3},{num:4},{num:5,name:'abbbbbbbbbbbbb'},{num:6,name:'Christophssssss'},{num:7},{num:8},{num:9},{num:0}]
         }
     },
     methods:{
-        onChooseNum(){
+        onChooseNum(num){
+            this.chosedNum = num;
             this.show = true
+        },
+        handleChoose(){
+            this.show = false;
+        },
+        handleCancel() {
+            this.$router.go(-1)
+        },
+        handleConfirm(){
+            this.$router.replace('/game')
         }
     }
 }
@@ -60,6 +101,13 @@ export default {
 <style scoped>
     .game{
         padding: 15px;
+        min-height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+    .gameTop{
+        flex:1;
     }
     
     .priceBox{
@@ -142,18 +190,70 @@ export default {
         font-size: 24px;
         padding-right: 6px;
     }
-    .countBox{
+
+
+    ._container{
+        width: 345px;
+        height: 44px;
+        margin: 10px auto 35px auto;
+        transform-style:preserve-3d;
+        perspective:1000;
+    }
+    .flip{
+        position: relative;
+        transition:0.6s;
+        transform-style:preserve-3d;
+        width: 345px;
+        height: 44px;
+        /* transform-origin:100% 172px; */
+    }
+    ._waiting{
         width: 345px;
         height: 44px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #F7924B;
         border-radius: 8px;
-        margin: 10px auto 35px auto;
         font-size: 14px;
         color: #fff;
+        position: absolute;
+        top:0;
+        left: 0;
+        right: 0;
+        backface-visibility:hidden;
     }
+    ._front{
+        background: #F7924B;
+        /* z-index:2; */
+    }
+    ._back{
+        background: #4A5E94;
+        transform:rotateX(-180deg);
+    }
+    ._container:hover .flip{
+        animation: flip 2s 1 ease-in-out;
+        /* //linear*/
+    }
+
+   @keyframes flip{
+        0%{
+            transform: rotateX(0deg);
+        }
+        20%{
+            transform: rotateX(180deg);
+        }
+        
+        80%{
+            transform: rotateX(180deg);
+        }
+
+        100%{
+            transform: rotateX(360deg);
+        }
+    }
+
+
+
     .numChooseBox{
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -254,5 +354,15 @@ export default {
         color: #fff;
         font-size: 17px;
         font-weight: 500;
+    }
+    ._out{
+        padding: 10px 20px;
+        text-align: center;
+    }
+    .room{
+        color: #888888;
+        font-size: 14px;
+        margin: 20px auto 30px auto;
+        text-align: center;
     }
 </style>

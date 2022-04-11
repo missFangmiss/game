@@ -18,18 +18,25 @@
                 <p class="small">Earn up to : ₹285</p>
             </div>
         </div>
-        <div class="btn"><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</div>
+        <div class="btn" @click="joinGame"><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</div>
         <p class="room">GAME ID : GN10294850</p>
     </div>
 </template>
 <script>
 export default {
-    name: 'result'
+    name: 'result',
+    methods:{
+        joinGame(){
+            this.$router.push('/game')
+        }
+    }
 }
 </script>
 <style scoped>
     .result{
         padding: 75px 15px 0 15px;
+        height: 100%;
+        box-sizing: border-box;
     }
     .logo{
         width: 100px;
@@ -111,6 +118,16 @@ export default {
         width: 20px;
         height: 20px;
         margin-right: 10px;
+    }
+    .room{
+        color: #888888;
+        font-size: 14px;
+        position: fixed;
+        bottom: 30px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        text-align: center;
     }
 
 </style>

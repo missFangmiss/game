@@ -6,10 +6,10 @@
             <p>Picking the right number will win all participants' fees</p>
             <p>Earn up to <span>₹950</span> if you win</p>
         </div>
-        <div class="btn">
+        <div class="btn" @click="joinGame">
             <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
         </div>
-        <div class="btn under">
+        <div class="btn under" @click="goHistory">
             <p>GAME HISTORY</p>
             <p class="_samll">&</p>
             <p class="_samll">GAME IN PROGRESS</p>
@@ -19,12 +19,22 @@
 </template>
 <script>
 export default {
-    name : 'home'
+    name : 'home',
+    methods: {
+        joinGame() {
+            this.$router.push('/game')
+        },
+        goHistory() {
+            this.$router.push('/history')
+        }
+    }
 }
 </script>
 <style scoped>
     .home{
         padding: 60px 15px;
+        height: 100%;
+        box-sizing: border-box;
     }
     .logo{
         display: block;

@@ -40,14 +40,5 @@ export default {
 		max-width: 768px;
 		margin: auto;
 	}
-	.room{
-        color: #888888;
-        font-size: 14px;
-        position: fixed;
-        bottom: 30px;
-        left: 0;
-        right: 0;
-        margin: auto;
-        text-align: center;
-    }
+	
 </style>
