@@ -15,10 +15,10 @@
                         style="width:90%"
                     />
                 </a-form-model-item>
-                <a-form-model-item ref="scale" label="佣金比例" prop="scale" labelAlign="right">
+                <a-form-model-item ref="rate" label="佣金比例" prop="rate" labelAlign="right">
                     <a-input
                         placeholder="请输入佣金比例"
-                        v-model="form.scale"
+                        v-model="form.rate"
                         style="width:90%"
                     /> &nbsp;%
                 </a-form-model-item>
@@ -31,10 +31,16 @@
     </div>
 </template>
 <script>
+import {setInfo,updateSet} from 'common@api/set.js'
+
     export default {
         name: 'uppwd',
         mounted(){
-            
+            setInfo({route:'Index_config'}).then(res=>{
+                let config = res.respData.config;
+                this.form.fee = config.entrance_fee;
+                this.form.rate = config.rate;
+            })
         },
         data(){
             return {
@@ -42,43 +48,28 @@
                 wrapperCol: { span: 6,offset:1},
                 form: {
                     fee:'100',
-                    scale:'5'
+                    rate:'5'
                 },
                 rules: {
                     fee: [
                         {required: true, message: '请输入入场费', trigger: 'blur'}
                     ],
-                    scale: [
+                    rate: [
                         {required: true, message: '请输入佣金比例', trigger: 'blur'}
                     ]
                 }
             }
         },
-        mounted(){
-
-        },
         methods: {
-            resetForm() {
-                this.$router.go(-1);
-            },
             onSubmit(){
                 this.$refs.ruleForm.validate(valid => {
                     if (valid) {
-                        if(this.form.password != this.form.password2){
-                            return this.$Message.error('两次密码输入不一致！')
-                        }
-                        this.$axios.post(this.$baseUrl+'/receive',{route:'Index_updatePassword',password:this.form.password,confirmPsw:this.form.password2}).then( res => {
-                            if(res.respCode == '00'){
-                                this.$Message.success('修改成功')
-                                this.$router.go(-1)
-                            }else{
-                                this.$Message.error(res.respDesc)
-                                return;
-                            }
-                        }).catch( err => {
-                            console.log(err);
-                            this.$Message.error('系统错误')
-                            return;
+                        updateSet({
+                            route:'Index_saveConfig',
+                            entrance_fee:this.form.fee,
+                            rate:this.form.rate,
+                        }).then(res=>{
+                            this.$Message.success('修改成功')
                         })
                     }
                 })

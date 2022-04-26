@@ -26,6 +26,8 @@ module.exports = {
         'common@lib': 'lib',
         'common@module': 'module',
         'spa@comp_index': 'pages/index/components',
-        'spa@comp_admin': 'pages/admin/components'
+        'spa@comp_admin': 'pages/admin/components',
+        'common@api':'api'
+
     }
 }

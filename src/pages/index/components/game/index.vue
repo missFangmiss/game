@@ -6,12 +6,14 @@
                     <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
                     <div class="priceShow">38960.2 <p class="lastNum">9</p></div>
                 </div>
-                <!-- <p class="desc">Guess the last number of the BTC price after the game starts, Earn up to ₹950 if win.</p> -->
-                <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
-                <p class="startDesc">Remaining Time</p>
-                <p class="countDown"><span>21</span>seconds</p>
+                <p class="desc" v-if="!isStart">Guess the last number of the BTC price after the game starts, Earn up to ₹950 if win.</p>
+                <div v-else>
+                    <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
+                    <p class="startDesc">Remaining Time</p>
+                    <p class="countDown"><span>21</span>seconds</p>
+                </div>
             </div>
-            <div class="_container">
+            <div class="_container" v-if="!isStart">
                 <div class="flip">
                     <p class="_waiting _front">Need at least 2  more players to start</p>
                     <p class="_waiting _back">New player : Calcutta joins the game</p>
@@ -68,9 +70,7 @@ export default {
         [Dialog.Component.name]: Dialog.Component,
     },
     mounted(){
-        // setTimeout(() => {
-        //     this.isOut = true;
-        // }, 5000);
+        
     },
     data(){
         return{
@@ -78,6 +78,7 @@ export default {
             chosedNum:-1,
             show:false,
             isOut:false,
+            isStart:false,
             list:[{num:1},{num:2},{num:3},{num:4},{num:5,name:'abbbbbbbbbbbbb'},{num:6,name:'Christophssssss'},{num:7},{num:8},{num:9},{num:0}]
         }
     },
@@ -116,6 +117,7 @@ export default {
         background: #4A5E94;
         box-sizing: border-box;
         padding: 10px 15px 20px 15px;
+        margin: auto;
     }
     .price{
         display: flex;

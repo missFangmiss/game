@@ -11,7 +11,6 @@
 				ref="loginForm" 
 				:label-col="labelCol" 
 				:wrapper-col="wrapperCol"   
-				@submit="handleSubmit"   
 			>
 				<a-form-model-item label="" prop="account">
 					<a-input v-model="form.account" placeholder="账户"  class="input-style" size="large" >
@@ -36,14 +35,14 @@
 					</a-row>
 				</a-form-model-item> -->
 				<a-form-model-item>
-					<a-button type="primary" html-type="submit"  :loading="loading"  class="input-style" size="large" > 登录 </a-button>
+					<a-button type="primary" @click="onSubmit"  :loading="loading"  class="input-style" size="large" > 登录 </a-button>
 				</a-form-model-item>
 			</a-form-model>
 		</div>
 	</div>
 </template>
 <script>
-
+import { login } from 'common@api/user.js'
 export default {
 	name: 'login',
 	data(){
@@ -51,19 +50,42 @@ export default {
 			form: {
 				account: '',
 				password: '',
-				code: ''
 			},
 			labelCol: { span: 0 },
 			wrapperCol: { span: 24 },
-			loading:false
+			loading:false,
+			rules:{
+				account:[{required:true,message:'请输入账号',trigger:'blur'}],
+				password:[{required:true,message:'请输入密码',trigger:'blur'}]
+			}
 		}
 	},
 
 	methods:{
-		handleSubmit(e){
-			console.log('111')
-			let that = this;
-			this.$router.replace('/home');
+		onSubmit(){
+			this.$refs.loginForm.validate(valid=>{
+				if(valid){
+					this.loading = true;
+					login({
+						route:'Login_login',
+						username:this.form.account,
+						password:this.form.password
+					}).then(res=>{
+						this.loading = false;
+						if(res.respCode=='00' && res.respData.token){
+							sessionStorage.setItem('token',res.respData.token);
+							this.$router.replace('/home1');
+						}else{
+							this.$Message.error(res.respDesc)
+							return;
+						}
+					}).catch(error=>{
+						this.loading = false;
+					})
+				}else{
+					return false;
+				}
+			})
 		}
 	}
 }

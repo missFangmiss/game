@@ -10,10 +10,10 @@
                 <span style="flex:1;color: #333;">{{title}}</span>
                 <a-dropdown >
                     <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-                        admin <a-icon type="down" />
+                        {{loginName}} <a-icon type="down" />
                     </a>
                     <a-menu slot="overlay" style="margin-right: 10px;">
-                        <a-menu-item key="1">
+                        <a-menu-item key="1" @click="modifyPwd">
                            修改密码
                         </a-menu-item>
                         <a-menu-item key="2">
@@ -49,8 +49,22 @@
         computed:{
             title(){
                 return this.$store.state.Route.pageTitle
+            },
+            loginName(){
+                return this.$store.getters.userInfo.username
             }
         },
+        methods:{
+            modifyPwd(){
+                this.$router.push({path:'/uppwd'})
+            },
+            loginOut(){
+                this.$store.commit('Route/setSideBar',{expand:'',chosed:''})
+                this.$store.commit('User/clearInfo')
+                this.$router.replace('/login')
+                sessionStorage.clear();
+            }
+        }
         
     };
 </script>

@@ -31,7 +31,7 @@
 </template>
 <script>
     import moment from 'moment';
-    import pageTableList from '../../../../module/mixins/list'
+    import pageTableList from 'common@module/mixins/list'
     export default {
         name: 'daily',
         mixins: [pageTableList],
@@ -53,8 +53,8 @@
                     {title: '订单数',key: 'describe',dataIndex: 'describe',width: '12%'},
                     {title: '游戏局数',key: 'ctime',dataIndex: 'ctime',width: '16%'},
                     {title: '消费金额',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '消费人数',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '平台佣金',key: 'cname',dataIndex: 'cname',width: '10%'},
+                    {title: '消费人数',key: 'cname1',dataIndex: 'cname1',width: '10%'},
+                    {title: '平台佣金',key: 'cname2',dataIndex: 'cname2',width: '10%'},
                 ],
                 //查询字段
                 searchItems: {

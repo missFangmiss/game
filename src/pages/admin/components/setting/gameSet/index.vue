@@ -38,11 +38,9 @@
     </div>
 </template>
 <script>
+import {setInfo,updateSet} from 'common@api/set.js'
     export default {
         name: 'uppwd',
-        mounted(){
-            
-        },
         data(){
             return {
                 labelCol: { span: 2, },
@@ -53,42 +51,42 @@
                     gameTime:'30'
                 },
                 rules: {
-                    
                     num: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
+                        {required: true, message: '请输入', trigger: 'blur'},
                     ],
                     waitTime: [
-                        {required: true, message: '请再次输入密码', trigger: 'blur'}
+                        {required: true, message: '请输入', trigger: 'blur'}
                     ],
                     gameTime: [
-                        {required: true, message: '请再次输入密码', trigger: 'blur'}
+                        {required: true, message: '请输入', trigger: 'blur'}
                     ]
                 }
             }
         },
         mounted(){
-
+            setInfo({route:'Index_config'}).then(res=>{
+                let config = res.respData.config;
+                this.form.num = config.min_num;
+                this.form.waitTime = config.wait_time;
+                this.form.gameTime = config.game_time;
+            })
         },
         methods: {
             
             onSubmit(){
                 this.$refs.ruleForm.validate(valid => {
                     if (valid) {
-                        if(this.form.password != this.form.password2){
-                            return this.$Message.error('两次密码输入不一致！')
-                        }
-                        this.$axios.post(this.$baseUrl+'/receive',{route:'Index_updatePassword',password:this.form.password,confirmPsw:this.form.password2}).then( res => {
-                            if(res.respCode == '00'){
-                                this.$Message.success('修改成功')
-                                this.$router.go(-1)
-                            }else{
-                                this.$Message.error(res.respDesc)
-                                return;
-                            }
-                        }).catch( err => {
-                            console.log(err);
-                            this.$Message.error('系统错误')
+                        if(this.form.num>10||this.form.num<2){
+                            this.$Message.error('最低开始人数为2～10')
                             return;
+                        }
+                        updateSet({
+                            route:'Index_saveConfig',
+                            min_num:this.form.num,
+                            wait_time:this.form.waitTime,
+                            game_time:this.form.gameTime
+                        }).then(res=>{
+                            this.$Message.success('修改成功')
                         })
                     }
                 })

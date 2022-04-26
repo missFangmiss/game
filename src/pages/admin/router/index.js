@@ -11,21 +11,32 @@ const router = new VueRouter({
 })
 
 // 路由开始钩子
-router.beforeEach((route, from, next) => {
+router.beforeEach(async(route, from, next) => {
 	let { meta } = route
 	meta.title && (window.document.title = meta.title)
 	// 检查跳转是否需要登陆
 	if(meta.requireAuth){
 		if(!sessionStorage.getItem('token')){
 			// next(`/login?redirect=${to.path}`)
-			// next(`/login`);
+			next(`/login`);
 		}else{
-			store.dispatch('actionsSetTitle', meta.title);
-			next();
+			if(JSON.stringify(store.getters.userInfo)=='{}'){//没有路由和用信息
+				try {
+					await store.dispatch('User/setUserInfo');
+					next()//{...to, replace:true}
+				} catch (error) {
+					console.log(error)
+					next(`/login`)
+				}
+			}else{
+				store.dispatch('Route/actionsSetTitle', meta.title);
+				next();
+			}
+			
 		}
 	}else{
 		next()
-		store.dispatch('actionsSetTitle', meta.title);
+		store.dispatch('Route/actionsSetTitle', meta.title);
 	}
 })
 
