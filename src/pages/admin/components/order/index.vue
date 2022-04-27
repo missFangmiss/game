@@ -5,17 +5,17 @@
             <a-row :gutter="24">
                 <a-col :span="6">
                     <a-form-item label="用户ID：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.user_id"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="用户名：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.user_name"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="7">
                     <a-form-item label="用户手机号：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.mobile"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
@@ -30,12 +30,12 @@
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="游戏ID：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.game_id"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="4">
                     <a-button icon="search" type="primary" @click="handleSearch()">查询</a-button>
-                    <a-button  @click="handleSearch()">重置</a-button>
+                    <a-button  @click="handleReset()">重置</a-button>
                 </a-col>
             </a-row>
         </a-form>
@@ -54,7 +54,7 @@
 </template>
 <script>
     import moment from 'moment';
-    import pageTableList from '../../../../module/mixins/list'
+    import pageTableList from 'common@module/mixins/list'
     export default {
         name: 'order',
         mixins: [pageTableList],
@@ -64,29 +64,26 @@
                 choosedState:'',
                 keywords:'',
                 params:{
-                   route:'Admin_index',
+                   route:'Bill_index',
                    page:1,
                    limit:10,
-                   startTime:'',
-                   endTime:'' 
+                   start:'',
+                   end:'',
+                   game_id:'',
+                   mobile:'',
+                   user_name:'',
+                   user_id:''
                 },
                 roleList:[],
                 columns: [
-                    {title: '订单号',key: 'username',dataIndex: 'username',width: '10%'},
-                    {title: '用户名',key: 'name',dataIndex: 'name',width: '10%'},
-                    {title: '用户ID',key: 'describe',dataIndex: 'describe',width: '12%'},
-                    {title: '手机号',key: 'ctime',dataIndex: 'ctime',width: '16%'},
-                    {title: '消费金额',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '消费时间',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '游戏ID',key: 'cname',dataIndex: 'cname',width: '10%'},
+                    {title: '订单号',key: 'bill_no',dataIndex: 'bill_no',width: '11%'},
+                    {title: '用户名',key: 'user_name',dataIndex: 'user_name',width: '12%'},
+                    {title: '用户ID',key: 'user_id',dataIndex: 'user_id',width: '12%'},
+                    {title: '手机号',key: 'mobile',dataIndex: 'mobile',width: '10%'},
+                    {title: '消费金额',key: 'amount',dataIndex: 'amount',width: '10%'},
+                    {title: '消费时间',key: 'create_time',dataIndex: 'create_time',width: '12%'},
+                    {title: '游戏ID',key: 'game_id',dataIndex: 'game_id',width: '10%'},
                 ],
-                //查询字段
-                searchItems: {
-                    endTime: moment().endOf('day'),
-                    beginTime: moment().startOf('day'),
-                    status: '1'
-                },
-                
             }
         },
         mounted() {
@@ -95,7 +92,6 @@
         },
         methods:{
             moment,
-            
             disabledDate(current){
                 return current && current > moment().endOf('day')
             },
@@ -110,16 +106,20 @@
             },
             onDateChange(date,dateString){
                 this.dateChoose = date;
-                this.params.startTime = dateString[0];
-                this.params.endTime = dateString[1];
+                this.params.start = dateString[0];
+                this.params.end = dateString[1];
             },
             handleReset(){
                 this.params = {
-                    route:'Admin_index',
+                    route:'Bill_index',
                     page:1,
                     limit:10,
-                    startTime:'',
-                    endTime:'' 
+                    start:'',
+                    end:'',
+                    game_id:'',
+                    mobile:'',
+                    user_name:'',
+                    user_id:'' 
                 }
                 this.dateChoose = [];
                 this.postTableList()

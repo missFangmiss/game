@@ -69,7 +69,7 @@
 </template>
 <script>
     import moment from 'moment';
-    import pageTableList from '../../../../module/mixins/list'
+    import pageTableList from 'common@module/mixins/list'
     export default {
         name: 'order',
         mixins: [pageTableList],
