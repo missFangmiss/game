@@ -22,17 +22,23 @@
                 <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
             </div>
         </div>
-        <div class="btn" @click="joinGame"><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</div>
+        <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</van-button>
         <p class="room">GAME ID : {{gameId}}</p>
     </div>
 </template>
 <script>
-import { h5GameResult } from 'common@api/set.js'
+import { h5GameResult ,h5GameSearch} from 'common@api/set.js'
+import { Button } from 'vant';
+
 export default {
     name: 'result',
+    components:{
+        [Button.name]: Button,
+    },
     data(){
         return{
             gameId:'',
+            isLoading:false,
             gameInfo:{
                 "earning": "",
                 "close_price": "",
@@ -51,9 +57,17 @@ export default {
         }
     },
     methods:{
-        joinGame(){
-            this.$router.push('/game')
-        }
+        joinGame() {
+            this.isLoading = true;
+            h5GameSearch({route:'Game_selGame'}).then(res=>{
+                let resp = res.respData;
+                this.$router.push({path:'/game',query:{gameId:resp.game_id}})
+                this.isLoading = false;
+            }).catch(e=>{
+                this.isLoading = false;
+                console.log(e)
+            })
+        },
     },
     mounted(){
         this.gameId = this.$route.query.id;
@@ -101,6 +115,7 @@ export default {
     }
     .title{
         font-size: 14px;
+        white-space: nowrap;
     }
     .small{
         font-size: 12px;

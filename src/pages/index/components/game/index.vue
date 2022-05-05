@@ -64,7 +64,7 @@
     </div>
 </template>
 <script>
-import { h5GameInfo,h5GamePrice, h5GameBuy, h5GameStart } from 'common@api/set.js'
+import { h5GameInfo,h5GamePrice, h5GameBuy, h5GameStart,h5GameSearch } from 'common@api/set.js'
 let info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null;
 import { Popup, Cell, Dialog } from 'vant';
 export default {
@@ -121,7 +121,7 @@ export default {
         //还需多少人参加
         atLeastNum(){
             let num = this.minPerson - this.inNum;
-            if(num<=0){
+            if(num<=0&&this.minPerson!=0){
                 this.status = 2;
             }
             return num;
@@ -136,8 +136,8 @@ export default {
                 waitTimeOut = setInterval(() => {
                     this.waitTime = this.waitTime-1;
                     if(this.waitTime<=0){
-                        this.onStart()
                         clearInterval(waitTimeOut)
+                        this.onStart()
                     }
                 }, 1000);
             }
@@ -199,7 +199,7 @@ export default {
                         this.luckyNum  = this.price.slice(-1);
                     }
                 })
-            }, 3000);
+            }, 1000);
             
         },
         onCycle(){
@@ -225,6 +225,7 @@ export default {
                     }
                    return item.user_id == this.userId
                 })
+                
 
 
                 this.onCycle()
@@ -257,7 +258,12 @@ export default {
         },
         //重新开始一场
         handleConfirm(){
-            this.$router.replace('/game')
+            h5GameSearch({route:'Game_selGame'}).then(res=>{
+                let resp = res.respData;
+                this.$router.replace({path:'/game',query:{gameId:resp.game_id}})
+            }).catch(e=>{
+                this.$router.go(-1)
+            })
         },
         //选择数组的弹窗关闭时
         onClose(){
