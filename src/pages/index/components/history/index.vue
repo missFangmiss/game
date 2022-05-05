@@ -1,45 +1,89 @@
 <template>
     <div class="history">
-        <div class="item  _ing">
+        <div class="item  _ing" v-for="(item,index) in listIng" :key="index">
             <div class="_top">
-                <p class="_gameId">GAME ID : GN10294850</p>
+                <p class="_gameId">GAME ID : {{item.game_id}}</p>
                 <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"> 28<span class="seconds">s</span></p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
-                    <div class="info _left"><p>chosen number</p><p class="numChosed">2</p></div>
-                    <div class="info"><p>Player</p><p>3</p></div>
-                    <div class="info _last"><p>Amount</p> <p>₹100</p></div>
+                    <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
+                    <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
+                    <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
                     <!-- <div class="info"><p>Earning</p><p>₹285</p></div> -->
                 </div>
-                <div class="gameInfo"><p>Opening Price: 40975.29</p></div>
+                <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div>
             </div>
         </div>
-        <div class="divid">—— GAME IN PROGRESS ——</div>
-        <div class="item  _ed" @click="goResult">
+        <div class="divid" v-if="listIng.length>0">—— GAME IN PROGRESS ——</div>
+        <div class="item  _ed" v-for="(item,index) in listEd" :key="index" @click="goResult(item.game_id)">
             <div class="_top">
-                <p class="_gameId">GAME ID : GN10294850</p>
-                <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"> 28<span class="seconds">s</span></p>
+                <p class="_gameId">GAME ID : {{item.game_id}}</p>
+                <!-- 1赢，2输，3平 -->
+                <p :class="['status', {_lose:item.win_status==2},{_draw:item.win_status==3}]">{{item.win_status==1?'WIN':(item.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
-                    <div class="info _left"><p>chosen number</p><p class="numChosed">2</p></div>
-                    <div class="info"><p>Player</p><p>3</p></div>
-                    <div class="info"><p>Amount</p> <p>₹100</p></div>
-                    <div class="info _last"><p>Earning</p><p>₹285</p></div>
+                    <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
+                    <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
+                    <div class="info"><p>Amount</p> <p>₹{{item.amount}}</p></div>
+                    <div class="info _last"><p>Earning</p><p>₹{{item.earning}}</p></div>
                 </div>
-                <div class="gameInfo"><p>Opening Price: 40975.29</p><p class="_numshow">Closing Price: 40975.2 <span class="_lastNum">2</span></p></div>
+                <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p><p class="_numshow">Closing Price: {{item.close_price |notlastNum}} <span class="_lastNum">{{item.close_price | lastNum}}</span></p></div>
             </div>
-            <div class="_bottom">Closing Time: 2022-03-24 10:32:12</div>
+            <div class="_bottom">Closing Time: {{item.end_time}}</div>
         </div>
+        <van-empty image="search" description="NO DATA" v-if="isNull">
+            <van-button round color="#4A5E94" @click="join">Join a Game</van-button>
+        </van-empty>
     </div>
 </template>
 <script>
+import { h5GameRecord } from 'common@api/set.js'
+import { Empty,Button } from 'vant';
 export default {
     name: 'history',
+    components:{
+        [Empty.name]: Empty,
+        [Button.name]: Button
+    },
+    data(){
+        return{
+            listIng:[],
+            listEd:[],
+            isNull:false
+        }
+    },
+    mounted(){
+        this.getList()
+    },
     methods:{
-        goResult(){
-            this.$router.push('/result')
+        getList(){
+            h5GameRecord({route:'Game_gameLog',user_id:sessionStorage.getItem('userId')}).then(res=>{
+                let list = res.respData;
+                this.isNull = list.length<=0 ? true : false;
+                this.listIng = list.filter((item,index)=>{
+                    return item.win_status ==''
+                })
+                this.listEd = list.filter((item,index)=>{
+                    return item.win_status !=''
+                })
+
+            })
+        },
+        goResult(id){
+            this.$router.push({path:'/result',query:{id:id}})
+        },
+        join(){
+            this.$router.push('/game')
+        }
+    },
+    filters:{
+        lastNum(value){
+            return value.slice(-1)
+        },
+        notlastNum(value){
+            return value.slice(0,value.length-1)
         }
     }
 }
@@ -47,7 +91,8 @@ export default {
 <style scoped>
     .history{
         padding: 15px 0;
-        
+        /* min-height: 100vh; */
+        /* box-sizing: border-box; */
     }
     .item{
         width: 345px;
@@ -113,7 +158,8 @@ export default {
     }
     ._left{
         text-align: left;
-        margin-right: 45px;
+        margin-right: 0;
+        width: 135px;
     }
     ._last{
         margin-right: 0;

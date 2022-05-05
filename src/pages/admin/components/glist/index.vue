@@ -5,17 +5,17 @@
             <a-row :gutter="24">
                 <a-col :span="6">
                     <a-form-item label="用户ID：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.user_id"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="用户名：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.user_name"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="7">
                     <a-form-item label="用户手机号：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.mobile"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
@@ -30,27 +30,32 @@
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="游戏ID：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.game_id"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="状态：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-select  defaultValue="" :value="params.status" @change="handleStatusChange">
+                            <a-select-option v-for="(item,index) in statusList" :key="index" :value="item.value">
+                                {{item.text}}
+                            </a-select-option>
+                        </a-select>
                     </a-form-item>
+                    
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="尾数：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.winning_num"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="参与人数：">
-                        <a-input  placeholder="请输入" v-model="keywords"/>
+                        <a-input  placeholder="请输入" v-model="params.num"/>
                     </a-form-item>
                 </a-col>
                 <a-col :span="4">
                     <a-button icon="search" type="primary" @click="handleSearch()">查询</a-button>
-                    <a-button  @click="handleSearch()">重置</a-button>
+                    <a-button  @click="handleReset()">重置</a-button>
                 </a-col>
             </a-row>
         </a-form>
@@ -62,12 +67,20 @@
             :pagination="pagination" 
             :loading="tableLoading"
             @change="handleTableChange"
-        />
+        >
+            
+        </a-table>
         
         
     </div>
 </template>
 <script>
+const statusList = [
+    {value:'1',text:'开始前'},
+    {value:'2',text:'准备开始'},
+    {value:'3',text:'进行中'},
+    {value:'4',text:'已结束'},
+];
     import moment from 'moment';
     import pageTableList from 'common@module/mixins/list'
     export default {
@@ -79,25 +92,38 @@
                 choosedState:'',
                 keywords:'',
                 params:{
-                   route:'Admin_index',
+                   route:'Game_Index',
                    page:1,
                    limit:10,
-                   startTime:'',
-                   endTime:'' 
+                   start:'',
+                   end:'',
+                   user_id:'',
+                   user_name:'',
+                   mobile:'',
+                   status:'',
+                   num:'',
+                   winning_num:'',
+                   game_id:''
                 },
                 roleList:[],
+                statusList:[
+                    {value:'1',text:'开始前'},
+                    {value:'2',text:'准备开始'},
+                    {value:'3',text:'进行中'},
+                    {value:'4',text:'已结束'},
+                ],
                 columns: [
-                    {title: '游戏ID',key: 'username',dataIndex: 'username',width: '9%'},
-                    {title: '参与人数',key: 'name',dataIndex: 'name',width: '6%'},
-                    {title: '付费总额',key: 'describe',dataIndex: 'describe',width: '10%'},
-                    {title: '状态',key: 'ctime',dataIndex: 'ctime',width: '8%'},
-                    {title: '开始时间',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '结束时间',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '结束时数字',key: 'cname',dataIndex: 'cname',width: '8%'},
-                    {title: '尾数',key: 'cname',dataIndex: 'cname',width: '6%'},
-                    {title: '赢家用户名',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '赢家用户ID',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '赢家手机号',key: 'cname',dataIndex: 'cname',width: '10%'},
+                    {title: '游戏ID',key: 'game_id',dataIndex: 'game_id',width: '9%'},
+                    {title: '参与人数',key: 'num',dataIndex: 'num',width: '6%'},
+                    {title: '付费总额',key: 'amount',dataIndex: 'amount',width: '10%'},
+                    {title: '状态',key: 'status',dataIndex: 'status',customRender: (text,record,index) => {statusList.map(item=>{if(text==item.value) {console.log(item.text);return item.text} })},width: '8%'},
+                    {title: '开始时间',key: 'begin_time',dataIndex: 'begin_time',width: '10%'},
+                    {title: '结束时间',key: 'end_time',dataIndex: 'end_time',width: '10%'},
+                    {title: '结束时数字',key: 'close_price',dataIndex: 'close_price',width: '8%'},
+                    {title: '尾数',key: 'winning_num',dataIndex: 'winning_num',width: '6%'},
+                    {title: '赢家用户名',key: 'user_name',dataIndex: 'user_name',width: '10%'},
+                    {title: '赢家用户ID',key: 'user_id',dataIndex: 'user_id',width: '10%'},
+                    {title: '赢家手机号',key: 'mobile',dataIndex: 'mobile',width: '10%'},
                 ],
                 //查询字段
                 searchItems: {
@@ -122,6 +148,9 @@
                 this.params.page = 1;
                 this.postTableList()
             },
+            handleStatusChange(value){
+                this.params.status = value;
+            },
             
             //能获取到当前点击的页数
             handleTableChange(pagination, filters, sorter){
@@ -129,16 +158,23 @@
             },
             onDateChange(date,dateString){
                 this.dateChoose = date;
-                this.params.startTime = dateString[0];
-                this.params.endTime = dateString[1];
+                this.params.start = dateString[0];
+                this.params.end = dateString[1];
             },
             handleReset(){
                 this.params = {
-                    route:'Admin_index',
+                    route:'Game_Index',
                     page:1,
                     limit:10,
-                    startTime:'',
-                    endTime:'' 
+                    start:'',
+                    end:'',
+                    user_id:'',
+                    user_name:'',
+                    mobile:'',
+                    status:'',
+                    num:'',
+                    winning_num:'',
+                    game_id:'' 
                 }
                 this.dateChoose = [];
                 this.postTableList()

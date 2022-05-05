@@ -5,7 +5,8 @@ import Router from 'vue-router'
 const home = () =>import('spa@comp_index/home/index.vue'),
     game = () =>import('spa@comp_index/game/index.vue'),
     result = () =>import('spa@comp_index/result/index.vue'),
-    history = () =>import('spa@comp_index/history/index.vue')
+    history = () =>import('spa@comp_index/history/index.vue'),
+    login = () =>import('spa@comp_index/login/index.vue')
 
       
 
@@ -49,6 +50,14 @@ export default new Router({
           title:'GAME HISTORY'
         }
     },
+    {
+      path: '/login',
+      name: 'login',
+      component:login,
+      meta:{
+        title:'Login'
+      }
+  },
     
   ]
 })

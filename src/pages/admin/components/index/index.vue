@@ -16,7 +16,7 @@
                         <a-menu-item key="1" @click="modifyPwd">
                            修改密码
                         </a-menu-item>
-                        <a-menu-item key="2">
+                        <a-menu-item key="2" @click="loginOut">
                            退出
                         </a-menu-item>
                     </a-menu>

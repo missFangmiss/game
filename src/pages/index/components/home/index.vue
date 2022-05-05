@@ -2,13 +2,13 @@
     <div class="home">
         <img src="../../../../static/images/icon_home_logo.png" alt="GUESS" class="logo">
         <div class="content">
-            <p>Guess the <span>last number</span> of the BTC price after 30 seconds</p>
+            <p>Guess the <span>last number</span> of the BTC price after {{time}} seconds</p>
             <p>Picking the right number will win all participants' fees</p>
-            <p>Earn up to <span>₹950</span> if you win</p>
+            <p>Earn up to <span>₹{{total}}</span> if you win</p>
         </div>
-        <div class="btn" @click="joinGame">
+        <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
             <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
-        </div>
+        </van-button>
         <div class="btn under" @click="goHistory">
             <p>GAME HISTORY</p>
             <p class="_samll">&</p>
@@ -18,11 +18,50 @@
     </div>
 </template>
 <script>
+import { h5GameSet, h5GameSearch } from 'common@api/set.js'
+import { Button } from 'vant';
+
 export default {
     name : 'home',
+    components:{
+        [Button.name]: Button,
+    },
+    data(){
+        return{
+            time: '',
+            total: '',
+            isLoading: false,
+        }
+    },
+    mounted(){
+        this.getInfo();
+    },
     methods: {
+        getInfo(){
+            h5GameSet({route:'Game_gameConfig'}).then(res=>{
+                let info = res.respData;
+                this.time = info.game_time;
+                let rate = Number(info.rate) || 0,
+                    fee = Number(info.entrance_fee) || 0;
+                this.total = (fee*10) - (fee*10)*rate*0.01;
+                info.total = this.total;
+                sessionStorage.setItem('gameInfo',JSON.stringify(info))
+                
+            }).catch(e=>{
+                this.$toast('CONFIG ERROR!')
+                return;
+            })
+        },
         joinGame() {
-            this.$router.push('/game')
+            this.isLoading = true;
+            h5GameSearch({route:'Game_selGame'}).then(res=>{
+                let resp = res.respData;
+                this.$router.push({path:'/game',query:{gameId:resp.game_id}})
+                this.isLoading = false;
+            }).catch(e=>{
+                this.isLoading = false;
+                console.log(e)
+            })
         },
         goHistory() {
             this.$router.push('/history')

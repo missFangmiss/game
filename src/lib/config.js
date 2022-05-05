@@ -58,9 +58,9 @@ service.interceptors.response.use((res) =>{
     if(res.data.respCode!=='00'){
         message.error({
             content:res.data.respDesc || 'Error',
-            duration:2,
+            duration:10,
         });
-        return Promise.reject(res);
+        return Promise.reject(res.data);
     }else{
         return res.data;
     }

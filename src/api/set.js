@@ -16,3 +16,66 @@ export function updateSet(data) {
     })
 }
 
+export function h5GameSet(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameInfo(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameSearch(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameRecord(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GamePrice(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameBuy(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameStart(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5GameResult(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}

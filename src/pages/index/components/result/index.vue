@@ -1,34 +1,65 @@
 <template>
     <div class="result">
-        <img src="../../../../static/images/icon_win.png" alt="" class="logo">
-        <p class="status">YOU WIN</p>
-        <p class="status">₹285</p>
+        <div class="logo">
+            <img src="../../../../static/images/icon_win.png" alt="" v-if="gameInfo.win_status==1">
+            <img src="../../../../static/images/icon_draw.png" alt=""  v-if="gameInfo.win_status==3">
+            <img src="../../../../static/images/icon_lost.png" alt="" v-if="gameInfo.win_status==2">
+        </div>
+        <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
+        <p class="status">₹{{gameInfo.earning}}</p>
         <div class="info">
             <div class="priceInfo">
                 <p class="title">Closing Price Number</p>
-                <p class="price">38960.2 <span>2</span></p>
+                <p class="price">{{gameInfo.close_price | notlastNum}} <span>{{gameInfo.close_price | lastNum}}</span></p>
                 <p class="small">Closing Time</p>
-                <p class="small">2022-03-24 10:32:13</p>
+                <p class="small">{{gameInfo.end_time}}</p>
             </div>
             <div class="line"></div>
             <div class="chooseInfo">
                 <p class="title">Your chosen number</p>
-                <p class="price priceChoosn"><span>2</span></p>
-                <p class="small">Player : 3</p>
-                <p class="small">Earn up to : ₹285</p>
+                <p class="price priceChoosn"><span>{{gameInfo.num}}</span></p>
+                <p class="small">Player : {{gameInfo.player_num}}</p>
+                <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
             </div>
         </div>
         <div class="btn" @click="joinGame"><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</div>
-        <p class="room">GAME ID : GN10294850</p>
+        <p class="room">GAME ID : {{gameId}}</p>
     </div>
 </template>
 <script>
+import { h5GameResult } from 'common@api/set.js'
 export default {
     name: 'result',
+    data(){
+        return{
+            gameId:'',
+            gameInfo:{
+                "earning": "",
+                "close_price": "",
+                "end_time": "",
+                "num": '',
+                "player_num": ''
+            }
+        }
+    },
+    filters:{
+        lastNum(value){
+            return value.slice(-1)
+        },
+        notlastNum(value){
+            return value.slice(0,value.length-1)
+        }
+    },
     methods:{
         joinGame(){
             this.$router.push('/game')
         }
+    },
+    mounted(){
+        this.gameId = this.$route.query.id;
+        h5GameResult({route:'Game_gameRet',game_id:this.gameId,user_id:sessionStorage.getItem('userId')}).then(res=>{
+            this.gameInfo = res.respData;
+        })
     }
 }
 </script>
@@ -43,6 +74,10 @@ export default {
         height: 100px;
         margin: auto;
         display: block;
+    }
+    .logo>img{
+        width: 100px;
+        height: 100px;
     }
     .status{
         color: #F7924B;
