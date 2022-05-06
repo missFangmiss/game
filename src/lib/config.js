@@ -4,6 +4,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import { message } from 'ant-design-vue';
+import { Toast } from 'vant'
 
 // 设置接口地址，开发环境代理接口解决跨域问题
 // baseUrl 基础接口地址
@@ -51,15 +52,22 @@ service.interceptors.request.use((config) => {
 });
 //返回状态判断(添加响应拦截器)
 service.interceptors.response.use((res) =>{
+    console.log(res);
 	//对响应数据做些事
     if(!res.data){
         return Promise.reject(res);
     }
     if(res.data.respCode!=='00'){
-        message.error({
-            content:res.data.respDesc || 'Error',
-            duration:10,
-        });
+        if(res.config.url.indexOf('entry')>-1){
+            console.log("1")
+            Toast.fail(res.data.respDesc || 'Error');
+        }else{
+            message.error({
+                content:res.data.respDesc || 'Error',
+                duration:2,
+            });
+        }
+        
         return Promise.reject(res.data);
     }else{
         return res.data;

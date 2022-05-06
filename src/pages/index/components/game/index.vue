@@ -65,7 +65,7 @@
 </template>
 <script>
 import { h5GameInfo,h5GamePrice, h5GameBuy, h5GameStart,h5GameSearch } from 'common@api/set.js'
-let info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null;
+var info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null;
 import { Popup, Cell, Dialog } from 'vant';
 export default {
     name: 'game',
@@ -75,21 +75,10 @@ export default {
         [Dialog.Component.name]: Dialog.Component,
     },
     mounted(){
-        info = JSON.parse(sessionStorage.getItem('gameInfo')|| {});
         this.userId = sessionStorage.getItem('userId')
-        this.minPerson = info.min_num;
-        this.fee = info.entrance_fee;
-        this.rate = info.rate;
-        this.waitTime = info.wait_time;
-        this.gameTimes = info.game_time;
-        this.total = info.total;
         this.gameId = this.$route.query.gameId;
-        this.$socket.send(JSON.stringify({ //向端发送协议
-            method: 'test',
-            keyWords: '6666',
-        }));
-        // this.getPrice()
-        // this.getInfo();
+        // this.getPrice();
+        this.getInfo();
     },
     beforeDestroy(){
         clearInterval(priceTimeOut)
@@ -133,29 +122,18 @@ export default {
         actualTotal(){
             return (this.inNum*this.fee - this.inNum*this.fee*this.rate*0.01).toFixed(2);
         },
-        socketTimestamp(){
-            return this.$store.state.socketTimestamp
-        }
     },
     watch:{
-        socketTimestamp(old, newVal) {
-            this.handleMessage(this.$store.state.websocketMessage);
-        },
         status(newValue,oldValue){
             if(newValue==2){
-                waitTimeOut = setInterval(() => {
-                    this.waitTime = this.waitTime-1;
-                    if(this.waitTime<=0){
-                        clearInterval(waitTimeOut)
-                        this.onStart()
-                    }
-                }, 1000);
+                this.onCountDown('wwwwww')
             }
             if(newValue==3){
                 clearInterval(waitTimeOut)
                 gameTimeOut = setInterval(() => {
                     this.gameTimes = this.gameTimes-1;
                     if(this.gameTimes<=0){
+                        clearInterval(priceTimeOut)
                         // this.status = 4;
                         this.$router.replace({path:'/result',query:{id:this.gameId}})
                         clearInterval(gameTimeOut)
@@ -164,14 +142,18 @@ export default {
             }
         },
         inNum(newValue,oldValue){
-            if(newValue!=oldValue){
+            if(newValue!=oldValue && oldValue!=0){
                 clearInterval(waitTimeOut);
                 this.waitTime = info.wait_time;
                 this.newName =  this.name;
                 animationTimeOut = setTimeout(() => {
                     this.newName = '';
+                    if(this.status==2){
+                        this.onCountDown('bbbbb');
+                    }
                     clearTimeout(animationTimeOut)
                 }, 2000);
+                
             }
         }
 
@@ -182,7 +164,6 @@ export default {
             return (100-value) + '%'
         },
         lastNum(value){
-
             return value.slice(-1)
         },
         notlastNum(value){
@@ -190,20 +171,21 @@ export default {
         }
     },
     methods:{
-        handleMessage(res) {//处理接收到的信息
-            res = JSON.parse(res);
-            console.log(res);
+        onCountDown(type){
+            console.log(type)
+            waitTimeOut = setInterval(() => {
+                this.waitTime = this.waitTime-1;
+                if(this.waitTime<0){
+                    clearInterval(waitTimeOut)
+                    this.onStart()
+                }
+            }, 1000);
         },
         onStart(){
             clearInterval(infoTimeOut);
             if(!this.isChoosn){
                 this.isOut = true;
-            }else{
-                h5GameStart({route:'Game_beginGame',game_id:this.gameId}).then(res=>{
-                    this.status = 3;
-                })
             }
-            
         },
         getPrice(){
             priceTimeOut = setInterval(() => {
@@ -213,25 +195,51 @@ export default {
                         this.luckyNum  = this.price.slice(-1);
                     }
                 })
-            }, 1000);
+            }, 2000);//TODO
             
         },
         onCycle(){
             infoTimeOut = setInterval(() => {
                 h5GameInfo({route:'Game_gameInfo',game_id:this.gameId}).then(res=>{
-                    let resp = res.respData.game_info;
+                    let resp = res.respData;
                     this.inNum = resp.num;
                     this.list = resp.num_obj;
-                    this.name = res.respData.new_player;
+                    this.name = resp.new_player;
                 })
-            }, 1000);
+            }, 2000);//TODO
         },
         getInfo(){
             h5GameInfo({route:'Game_gameInfo',game_id:this.gameId}).then(res=>{
-                let resp = res.respData.game_info;
+                let resp = res.respData;
+                if(resp.status=='4'){
+                    this.$router.replace({path:'/result',query:{id:this.gameId}})
+                }
+                info = resp;
                 this.inNum = resp.num;
-                this.status = resp.status;
-                this.list = resp.num_obj;
+                this.minPerson = resp.min_num;
+                this.fee = resp.entrance_fee;
+                this.rate = resp.rate;
+                this.waitTime = resp.wait_time;
+                this.gameTimes = resp.game_time;
+                this.total = (this.fee*10) - (this.fee*10)*this.rate*0.01;
+
+
+                if(resp.status==2){
+                    this.name = resp.latest_join_user;
+                    let lastJoinTime = new Date(resp.latest_join_time).getTime();
+                    let nowTime = new Date().getTime();
+                    this.waitTime = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
+                    console.log("wait----+"+this.waitTime)
+                }
+                if(resp.status==3){
+                    let endTime = new Date(resp.end_time).getTime();
+                    let nowTime = new Date().getTime();
+                    this.gameTimes = (((info.game_time*1000 + endTime) - nowTime) / 1000).toFixed(0);
+                }
+
+                this.status = resp.status;// 0 初始化；1开始前；2准备开始；3进行中；4已结束
+
+                this.list = resp.num_obj || [];
                 let isChoosed = this.list.some(item=>{
                     if(item.user_id == this.userId){
                         this.chosedNum = item.num;
@@ -239,10 +247,10 @@ export default {
                     }
                    return item.user_id == this.userId
                 })
+                if(resp.status!=3 || resp.status!=4){
+                    this.onCycle()
+                }
                 
-
-
-                this.onCycle()
             })
         },
         //选中数字 弹出弹窗

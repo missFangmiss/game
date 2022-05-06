@@ -44,8 +44,8 @@ export default {
                 let rate = Number(info.rate) || 0,
                     fee = Number(info.entrance_fee) || 0;
                 this.total = (fee*10) - (fee*10)*rate*0.01;
-                info.total = this.total;
-                sessionStorage.setItem('gameInfo',JSON.stringify(info))
+                // info.total = this.total;
+                // sessionStorage.setItem('gameInfo',JSON.stringify(info))
                 
             }).catch(e=>{
                 this.$toast('CONFIG ERROR!')

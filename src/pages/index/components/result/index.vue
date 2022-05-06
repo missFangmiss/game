@@ -100,7 +100,7 @@ export default {
     }
     .info{
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         margin-top: 70px;
 
     }

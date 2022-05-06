@@ -4,19 +4,19 @@
             OPTION GAME
         </div>
         <a-menu theme="dark" mode="inline" 
-            :default-selected-keys="['home1']"
-            :default-open-keys="['1']"
+            :default-selected-keys="chosedMenu"
+            :default-open-keys="chosedMenuOpen"
             :style="{ height: '100%', borderRight: 0 }"
         >
             <template v-for="item in list">
-                <a-menu-item  :key="item.key" v-if="!item.children" @click="handleClick"> 
+                <a-menu-item  :key="item.key" v-if="!item.children" @click="handleClick(item.key,item.key)"> 
                     <a-icon :type="item.icon" />
                     <span> {{item.title}}</span>
                 </a-menu-item>
                 <a-sub-menu :key="item.key" v-else>
                     <span slot="title"><a-icon :type="item.icon" />{{item.title}}</span>
                     <template v-for="items in item.children" >
-                        <a-menu-item  :key="items.key" @click="handleClick">                  
+                        <a-menu-item  :key="items.key" @click="handleClick(item.key,items.key)">                  
                             <span>{{items.title}}</span>
                         </a-menu-item>
                     </template>                     
@@ -52,7 +52,7 @@ export default {
                    icon: 'schedule',
                },
                {
-                   key: 'list',
+                   key: 'glist',
                    title: '游戏列表',
                    icon: 'audit',
                },
@@ -80,9 +80,12 @@ export default {
         this.userRouteName = userRoute;
         // this.list = this.list.concat(userRoute); 
         let barSave = this.$store.state.Route.sideBar;
+        console.log(barSave)
         if(barSave.expandBar){
             this.$set(this.chosedMenu,0,barSave.chosedBar);
             this.$set(this.chosedMenuOpen,0,barSave.expandBar);
+            console.log(this.chosedMenu)
+            console.log(this.chosedMenuOpen)
         }else{
             let name = this.$route.name;
             let parentName = this.cycleObject(this.mapData,name);
@@ -93,8 +96,10 @@ export default {
         }
     },
     methods: {
-        handleClick(e){
-            this.$router.replace({ path: '/'+e.key });
+        handleClick(parent,key){
+            console.log({expand:parent,chosed:key})
+            this.$store.commit('Route/setSideBar',{expand:parent,chosed:key})
+            this.$router.replace({ path: '/'+key });
         },
         cycleObject(jsonObj,value){
             for(let key in jsonObj) {

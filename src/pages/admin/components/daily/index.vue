@@ -17,10 +17,21 @@
             </a-row>
         </a-form>
         <a-table 
+            :columns="columnsTotal" 
+            :data-source="dataTotal" 
+            class="table" 
+            rowKey="date"
+            :loading="tableLoading"
+            bordered
+            :pagination="false"
+        />
+        <br/>
+        <br/>
+        <a-table 
             :columns="columns" 
             :data-source="dataSource" 
             class="table" 
-            rowKey="id"
+            rowKey="date"
             :pagination="pagination" 
             :loading="tableLoading"
             @change="handleTableChange"
@@ -40,21 +51,30 @@
                 dateChoose:[],
                 choosedState:'',
                 params:{
-                   route:'Admin_index',
+                   route:'Statistics_index',
                    page:1,
                    limit:10,
-                   startTime:'',
-                   endTime:'' 
+                   start:'',
+                   end:'' 
                 },
                 roleList:[],
+                columnsTotal:[
+                    {title: '当前汇总数据',key: 'date',dataIndex: 'date',width: '10%'},
+                    {title: '总注册人数',key: 'register_num',dataIndex: 'register_num',width: '10%'},
+                    {title: '总订单数',key: 'bill_num',dataIndex: 'bill_num',width: '12%'},
+                    {title: '总游戏局数',key: 'game_num',dataIndex: 'game_num',width: '16%'},
+                    {title: '总消费金额',key: 'amount',dataIndex: 'amount',width: '10%'},
+                    {title: '总消费人数',key: 'num',dataIndex: 'num',width: '10%'},
+                    {title: '总平台佣金',key: 'fee',dataIndex: 'fee',width: '10%'},
+                ],
                 columns: [
-                    {title: '日期',key: 'username',dataIndex: 'username',width: '10%'},
-                    {title: '注册人数',key: 'name',dataIndex: 'name',width: '10%'},
-                    {title: '订单数',key: 'describe',dataIndex: 'describe',width: '12%'},
-                    {title: '游戏局数',key: 'ctime',dataIndex: 'ctime',width: '16%'},
-                    {title: '消费金额',key: 'cname',dataIndex: 'cname',width: '10%'},
-                    {title: '消费人数',key: 'cname1',dataIndex: 'cname1',width: '10%'},
-                    {title: '平台佣金',key: 'cname2',dataIndex: 'cname2',width: '10%'},
+                    {title: '日期',key: 'date',dataIndex: 'date',width: '10%'},
+                    {title: '注册人数',key: 'register_num',dataIndex: 'register_num',width: '10%'},
+                    {title: '订单数',key: 'bill_num',dataIndex: 'bill_num',width: '12%'},
+                    {title: '游戏局数',key: 'game_num',dataIndex: 'game_num',width: '16%'},
+                    {title: '消费金额',key: 'amount',dataIndex: 'amount',width: '10%'},
+                    {title: '消费人数',key: 'num',dataIndex: 'num',width: '10%'},
+                    {title: '平台佣金',key: 'fee',dataIndex: 'fee',width: '10%'},
                 ],
                 //查询字段
                 searchItems: {
@@ -68,6 +88,7 @@
         mounted() {
             // 获取表格数据
             this.postTableList();
+            this.dateChoose = [moment().startOf('day'),moment().endOf('day')]
         },
         methods:{
             moment,
@@ -86,16 +107,16 @@
             },
             onDateChange(date,dateString){
                 this.dateChoose = date;
-                this.params.startTime = dateString[0];
-                this.params.endTime = dateString[1];
+                this.params.start = dateString[0];
+                this.params.end = dateString[1];
             },
             handleReset(){
                 this.params = {
                     route:'Admin_index',
                     page:1,
                     limit:10,
-                    startTime:'',
-                    endTime:'' 
+                    start:'',
+                    end:'' 
                 }
                 this.dateChoose = [];
                 this.postTableList()

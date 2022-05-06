@@ -1,7 +1,6 @@
 <template>
     <div class="history">
-        <!-- //TODO -->
-        <div class="item  _ing" v-for="(item,index1) in listEd" :key="index1">
+        <div class="item  _ing" v-for="(item) in listYet" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">GAME ID : {{item.game_id}}</p>
                 <p class="status _lose _draw"><span class="seconds">waiting</span></p>
@@ -9,25 +8,22 @@
             <div class="_center">
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
-                    <div class="info"><p>Player</p><p>1</p></div>
+                    <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
                     <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
-                    <!-- <div class="info"><p>Earning</p><p>₹285</p></div> -->
                 </div>
-                <!-- <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div> -->
             </div>
         </div>
 
-        <div class="item  _ing" v-for="(item,index) in listIng" :key="index">
+        <div class="item  _ing" v-for="(item,index) in listIng" :key="index" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">GAME ID : {{item.game_id}}</p>
-                <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"> 28<span class="seconds">s</span></p>
+                <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span></p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
                     <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
                     <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
-                    <!-- <div class="info"><p>Earning</p><p>₹285</p></div> -->
                 </div>
                 <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div>
             </div>
@@ -51,39 +47,57 @@
             <div class="_bottom">Closing Time: {{item.end_time}}</div>
         </div>
         <van-empty image="search" description="NO DATA" v-if="isNull">
-            <van-button round color="#4A5E94" @click="join">Join a Game</van-button>
+            <van-button round color="#4A5E94" @click="join" :loading="isLoading" loading-text="loading...">Join a Game</van-button>
         </van-empty>
     </div>
 </template>
 <script>
-import { h5GameRecord } from 'common@api/set.js'
-import { Empty,Button } from 'vant';
+import { h5GameRecord,h5GameSearch } from 'common@api/set.js'
+import { Empty,Button,CountDown } from 'vant';
 export default {
     name: 'history',
     components:{
         [Empty.name]: Empty,
-        [Button.name]: Button
+        [Button.name]: Button,
+        [CountDown.name]: CountDown
     },
     data(){
         return{
             listIng:[],
             listEd:[],
-            isNull:false
+            listYet:[],
+            isNull:false,
+            isLoading:false
         }
     },
     mounted(){
         this.getList()
     },
     methods:{
+        onFinish(){
+            this.getList()
+        },
         getList(){
             h5GameRecord({route:'Game_gameLog',user_id:sessionStorage.getItem('userId')}).then(res=>{
                 let list = res.respData;
                 this.isNull = list.length<=0 ? true : false;
-                this.listIng = list.filter((item,index)=>{
-                    return item.win_status ==''
+                let ingList = list.filter((item,index)=>{
+                    return item.win_status == '4'
                 })
+                //倒计时
+                let nowTime  = new Date().getTime();
+                ingList.map(item=>({
+                    ...item,time: (new Date(item.end_time) - nowTime)
+                }))
+                this.listIng = ingList;
+
+
                 this.listEd = list.filter((item,index)=>{
-                    return item.win_status !=''
+                    return item.win_status !='0' && item.win_status !='4'
+                })
+
+                this.listYet = list.filter((item,index)=>{
+                    return item.win_status == '0'
                 })
 
             })
@@ -91,9 +105,20 @@ export default {
         goResult(id){
             this.$router.push({path:'/result',query:{id:id}})
         },
-        join(){
-            this.$router.push('/game')
-        }
+        goGame(id){
+            this.$router.push({path:'/game',query:{gameId:id}})
+        },
+        join() {
+            this.isLoading = true;
+            h5GameSearch({route:'Game_selGame'}).then(res=>{
+                let resp = res.respData;
+                this.$router.push({path:'/game',query:{gameId:resp.game_id}})
+                this.isLoading = false;
+            }).catch(e=>{
+                this.isLoading = false;
+                console.log(e)
+            })
+        },
     },
     filters:{
         lastNum(value){

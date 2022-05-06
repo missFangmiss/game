@@ -15,6 +15,7 @@ import {orderList} from 'common@api/list.js'
                 params:{},
                 tableLoading: false,              //表格数据加载动画
                 dataSource: [],                    //表格数据
+                dataTotal:[],
                 searchItems: {}, // 搜索字段
                 endOpen: false,
                 themes:[]
@@ -27,13 +28,16 @@ import {orderList} from 'common@api/list.js'
                 let that = this;
                 that.tableLoading = false;
                 orderList(this.params).then(res=>{
+                    let dataArray = [];
                     const pagination = { ...this.pagination };
                     pagination.total = parseInt(res.respData.count);
                     pagination.showTotal = (total)=> '总共有'+total+'条数据，每页'+pagination.pageSize+'条'
                     that.pagination = pagination;
-                    that.themes = res.respData.config || []
+                    that.themes = res.respData.config || [];
+                    dataArray.push(res.respData.total || '') ;
+                    that.dataTotal = dataArray
                     that.tableLoading = false;
-                    that.dataSource = res.respData.list;
+                    that.dataSource = res.respData.list || res.respData.data;
                 }).catch(err => {
                     this.tableLoading = false
                     this.dataSource = [];
