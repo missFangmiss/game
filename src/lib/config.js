@@ -59,7 +59,6 @@ service.interceptors.response.use((res) =>{
     }
     if(res.data.respCode!=='00'){
         if(res.config.url.indexOf('entry')>-1){
-            console.log("1")
             Toast.fail(res.data.respDesc || 'Error');
         }else{
             message.error({
