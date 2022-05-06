@@ -1,5 +1,22 @@
 <template>
     <div class="history">
+        <!-- //TODO -->
+        <div class="item  _ing" v-for="(item,index1) in listEd" :key="index1">
+            <div class="_top">
+                <p class="_gameId">GAME ID : {{item.game_id}}</p>
+                <p class="status _lose _draw"><span class="seconds">waiting</span></p>
+            </div>
+            <div class="_center">
+                <div class="choseInfo">
+                    <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
+                    <div class="info"><p>Player</p><p>1</p></div>
+                    <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
+                    <!-- <div class="info"><p>Earning</p><p>₹285</p></div> -->
+                </div>
+                <!-- <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div> -->
+            </div>
+        </div>
+
         <div class="item  _ing" v-for="(item,index) in listIng" :key="index">
             <div class="_top">
                 <p class="_gameId">GAME ID : {{item.game_id}}</p>

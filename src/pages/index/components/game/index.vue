@@ -84,8 +84,12 @@ export default {
         this.gameTimes = info.game_time;
         this.total = info.total;
         this.gameId = this.$route.query.gameId;
-        this.getPrice()
-        this.getInfo();
+        this.$socket.send(JSON.stringify({ //向端发送协议
+            method: 'test',
+            keyWords: '6666',
+        }));
+        // this.getPrice()
+        // this.getInfo();
     },
     beforeDestroy(){
         clearInterval(priceTimeOut)
@@ -128,9 +132,15 @@ export default {
         },
         actualTotal(){
             return (this.inNum*this.fee - this.inNum*this.fee*this.rate*0.01).toFixed(2);
+        },
+        socketTimestamp(){
+            return this.$store.state.socketTimestamp
         }
     },
     watch:{
+        socketTimestamp(old, newVal) {
+            this.handleMessage(this.$store.state.websocketMessage);
+        },
         status(newValue,oldValue){
             if(newValue==2){
                 waitTimeOut = setInterval(() => {
@@ -180,6 +190,10 @@ export default {
         }
     },
     methods:{
+        handleMessage(res) {//处理接收到的信息
+            res = JSON.parse(res);
+            console.log(res);
+        },
         onStart(){
             clearInterval(infoTimeOut);
             if(!this.isChoosn){

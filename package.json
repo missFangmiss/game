@@ -15,6 +15,7 @@
         "axios": "^0.18.0",
         "vant": "^2.12.37",
         "vue": "^2.6.10",
+        "vue-native-websocket": "^2.0.15",
         "vue-router": "^3.0.3",
         "vuex-persist": "^3.1.3"
     },
