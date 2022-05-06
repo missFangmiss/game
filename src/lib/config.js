@@ -52,7 +52,6 @@ service.interceptors.request.use((config) => {
 });
 //返回状态判断(添加响应拦截器)
 service.interceptors.response.use((res) =>{
-    console.log(res);
 	//对响应数据做些事
     if(!res.data){
         return Promise.reject(res);

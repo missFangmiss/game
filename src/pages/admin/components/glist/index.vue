@@ -76,6 +76,7 @@
 </template>
 <script>
 const statusList = [
+    {value:'0',text:''},
     {value:'1',text:'开始前'},
     {value:'2',text:'准备开始'},
     {value:'3',text:'进行中'},
@@ -116,7 +117,7 @@ const statusList = [
                     {title: '游戏ID',key: 'game_id',dataIndex: 'game_id',width: '9%'},
                     {title: '参与人数',key: 'num',dataIndex: 'num',width: '6%'},
                     {title: '付费总额',key: 'amount',dataIndex: 'amount',width: '10%'},
-                    {title: '状态',key: 'status',dataIndex: 'status',customRender: (text,record,index) => {statusList.map(item=>{if(text==item.value) {console.log(item.text);return item.text} })},width: '8%'},
+                    {title: '状态',key: 'status',dataIndex: 'status',customRender: (text,record,index) => { return statusList[text].text},width: '8%'},
                     {title: '开始时间',key: 'begin_time',dataIndex: 'begin_time',width: '10%'},
                     {title: '结束时间',key: 'end_time',dataIndex: 'end_time',width: '10%'},
                     {title: '结束时数字',key: 'close_price',dataIndex: 'close_price',width: '8%'},
