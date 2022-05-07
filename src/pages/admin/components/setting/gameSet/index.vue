@@ -33,7 +33,14 @@
             </a-form-model>
         </div>
         <div class="footer">
-            <a-button type="primary" @click="onSubmit">确认</a-button>
+            <a-popconfirm
+                title="确认修改?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="onSubmit"
+            >
+                <a-button type="primary">确认</a-button>
+            </a-popconfirm>
         </div> 
     </div>
 </template>

@@ -34,7 +34,7 @@
                 <van-cell title="Your chosen number" value="" :border="false" class="boxCell" title-class="cellTitle">
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
-                <van-cell title="Invest" :value="'₹'+fee" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Player" :value="inNum" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <van-cell title="Earn up to" :value="'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
             </div>
             <p class="tips" v-if="!isChoosn">Please click above to select a number</p>
@@ -114,9 +114,9 @@ export default {
         //还需多少人参加
         atLeastNum(){
             let num = this.minPerson - this.inNum;
-            if(num<=0&&this.minPerson!=0){
-                this.status = 2;
-            }
+            // if(num<=0&&this.minPerson!=0){
+            //     this.status = 2;
+            // }
             return num;
         },
         actualTotal(){
@@ -175,7 +175,7 @@ export default {
             console.log(type)
             waitTimeOut = setInterval(() => {
                 this.waitTime = this.waitTime-1;
-                if(this.waitTime<0){
+                if(this.waitTime<=0){
                     clearInterval(waitTimeOut)
                     this.onStart()
                 }
@@ -195,7 +195,7 @@ export default {
                         this.luckyNum  = this.price.slice(-1);
                     }
                 })
-            }, 2000);//TODO
+            }, 1000);//TODO
             
         },
         onCycle(){
@@ -224,17 +224,18 @@ export default {
                 this.total = (this.fee*10) - (this.fee*10)*this.rate*0.01;
 
 
-                if(resp.status==2){
+                if(resp.status=='2'){
                     this.name = resp.latest_join_user;
-                    let lastJoinTime = new Date(resp.latest_join_time).getTime();
+                    let lastJoinTime = new Date(resp.latest_join_time.replace(/-/g,"/")).getTime();
                     let nowTime = new Date().getTime();
                     this.waitTime = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
                     console.log("wait----+"+this.waitTime)
                 }
-                if(resp.status==3){
-                    let endTime = new Date(resp.end_time).getTime();
+                console.log(resp.status)
+                if(resp.status=='3'){
+                    let endTime = new Date(resp.end_time.replace(/-/g,"/")).getTime();
                     let nowTime = new Date().getTime();
-                    this.gameTimes = (((info.game_time*1000 + endTime) - nowTime) / 1000).toFixed(0);
+                    this.gameTimes = ((endTime - nowTime) / 1000).toFixed(0);
                 }
 
                 this.status = resp.status;// 0 初始化；1开始前；2准备开始；3进行中；4已结束
@@ -247,7 +248,8 @@ export default {
                     }
                    return item.user_id == this.userId
                 })
-                if(resp.status!=3 || resp.status!=4){
+                if(resp.status!='3' && resp.status!='4'){
+                    console.log('1111')
                     this.onCycle()
                 }
                 

@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="item  _ing" v-for="(item,index) in listIng" :key="index" @click="goGame(item.game_id)">
+        <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">GAME ID : {{item.game_id}}</p>
                 <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span></p>
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="divid" v-if="listIng.length>0">—— GAME IN PROGRESS ——</div>
-        <div class="item  _ed" v-for="(item,index) in listEd" :key="index" @click="goResult(item.game_id)">
+        <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id" @click="goResult(item.game_id)">
             <div class="_top">
                 <p class="_gameId">GAME ID : {{item.game_id}}</p>
                 <!-- 1赢，2输，3平 -->
@@ -86,10 +86,14 @@ export default {
                 })
                 //倒计时
                 let nowTime  = new Date().getTime();
-                ingList.map(item=>({
-                    ...item,time: (new Date(item.end_time) - nowTime)
-                }))
+                ingList.map(item=>{
+                    let endTime = new Date(item.end_time.replace(/-/g,"/")).getTime();
+                    item.time = ( endTime - nowTime)
+                    return item;
+                })
+
                 this.listIng = ingList;
+                console.log(this.listIng)
 
 
                 this.listEd = list.filter((item,index)=>{

@@ -1,28 +1,31 @@
 <template>
     <div class="result">
-        <div class="logo">
-            <img src="../../../../static/images/icon_win.png" alt="" v-if="gameInfo.win_status==1">
-            <img src="../../../../static/images/icon_draw.png" alt=""  v-if="gameInfo.win_status==3">
-            <img src="../../../../static/images/icon_lost.png" alt="" v-if="gameInfo.win_status==2">
-        </div>
-        <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
-        <p class="status">₹{{gameInfo.earning}}</p>
-        <div class="info">
-            <div class="priceInfo">
-                <p class="title">Closing Price Number</p>
-                <p class="price">{{gameInfo.close_price | notlastNum}} <span>{{gameInfo.close_price | lastNum}}</span></p>
-                <p class="small">Closing Time</p>
-                <p class="small">{{gameInfo.end_time}}</p>
+        <div class="_top">
+            <div class="logo">
+                <img src="../../../../static/images/icon_win.png" alt="" v-if="gameInfo.win_status==1">
+                <img src="../../../../static/images/icon_draw.png" alt=""  v-if="gameInfo.win_status==3">
+                <img src="../../../../static/images/icon_lost.png" alt="" v-if="gameInfo.win_status==2">
             </div>
-            <div class="line"></div>
-            <div class="chooseInfo">
-                <p class="title">Your chosen number</p>
-                <p class="price priceChoosn"><span>{{gameInfo.num}}</span></p>
-                <p class="small">Player : {{gameInfo.player_num}}</p>
-                <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
+            <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
+            <p class="status">₹{{gameInfo.earning}}</p>
+            <div class="info">
+                <div class="priceInfo">
+                    <p class="title">Closing Price Number</p>
+                    <p class="price">{{gameInfo.close_price | notlastNum}} <span>{{gameInfo.close_price | lastNum}}</span></p>
+                    <p class="small">Closing Time</p>
+                    <p class="small">{{gameInfo.end_time}}</p>
+                </div>
+                <div class="line"></div>
+                <div class="chooseInfo">
+                    <p class="title">Your chosen number</p>
+                    <p class="price priceChoosn"><span>{{gameInfo.num}}</span></p>
+                    <p class="small">Player : {{gameInfo.player_num}}</p>
+                    <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
+                </div>
             </div>
+            <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</van-button>
         </div>
-        <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</van-button>
+        
         <p class="room">GAME ID : {{gameId}}</p>
     </div>
 </template>
@@ -79,9 +82,15 @@ export default {
 </script>
 <style scoped>
     .result{
-        padding: 75px 15px 0 15px;
-        height: 100%;
+        padding: 75px 15px 25px 15px;
+        min-height: 100vh;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+    ._top{
+        flex:1;
+        padding-bottom: 30px;
     }
     .logo{
         width: 100px;
@@ -172,10 +181,6 @@ export default {
     .room{
         color: #888888;
         font-size: 14px;
-        position: fixed;
-        bottom: 30px;
-        left: 0;
-        right: 0;
         margin: auto;
         text-align: center;
     }

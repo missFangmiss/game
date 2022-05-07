@@ -64,6 +64,14 @@ service.interceptors.response.use((res) =>{
                 content:res.data.respDesc || 'Error',
                 duration:2,
             });
+            if(res.data.respCode=='119003'){
+                setTimeout(() => {
+                    sessionStorage.clear();
+                    window.location.reload()
+                }, 1000);
+                
+            }
+            
         }
         
         return Promise.reject(res.data);

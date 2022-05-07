@@ -1,19 +1,22 @@
 <template>
     <div class="home">
-        <img src="../../../../static/images/icon_home_logo.png" alt="GUESS" class="logo">
-        <div class="content">
-            <p>Guess the <span>last number</span> of the BTC price after {{time}} seconds</p>
-            <p>Picking the right number will win all participants' fees</p>
-            <p>Earn up to <span>₹{{total}}</span> if you win</p>
+        <div class="_top">
+            <img src="../../../../static/images/icon_home_logo.png" alt="GUESS" class="logo">
+            <div class="content">
+                <p>Guess the <span>last number</span> of the BTC price after {{time}} seconds</p>
+                <p>Picking the right number will win all participants' fees</p>
+                <p>Earn up to <span>₹{{total}}</span> if you win</p>
+            </div>
+            <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
+                <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
+            </van-button>
+            <div class="btn under" @click="goHistory">
+                <p>GAME HISTORY</p>
+                <p class="_samll">&</p>
+                <p class="_samll">GAME IN PROGRESS</p>
+            </div>
         </div>
-        <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
-            <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
-        </van-button>
-        <div class="btn under" @click="goHistory">
-            <p>GAME HISTORY</p>
-            <p class="_samll">&</p>
-            <p class="_samll">GAME IN PROGRESS</p>
-        </div>
+        
         <div class="link">HOW TO PLAY</div>
     </div>
 </template>
@@ -72,8 +75,14 @@ export default {
 <style scoped>
     .home{
         padding: 60px 15px;
-        height: 100%;
+        min-height: 100vh;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+    ._top{
+        flex:1;
+        padding-bottom: 30px;
     }
     .logo{
         display: block;
@@ -124,11 +133,9 @@ export default {
         font-size: 12px;
         color: #4A5E94;
         text-align: center;
-        position: fixed;
-        bottom: 30px;
+        /* position: fixed; */
+        /* padding-bottom: 30px; */
         margin: auto;
-        left:0;
-        right: 0;
         text-underline-offset: 4px;
         text-decoration: underline;
     }
