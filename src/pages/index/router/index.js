@@ -6,7 +6,9 @@ const home = () =>import('spa@comp_index/home/index.vue'),
     game = () =>import('spa@comp_index/game/index.vue'),
     result = () =>import('spa@comp_index/result/index.vue'),
     history = () =>import('spa@comp_index/history/index.vue'),
-    login = () =>import('spa@comp_index/login/index.vue')
+    login = () =>import('spa@comp_index/login/index.vue'),
+    example = () =>import('spa@comp_index/example/index.vue')
+
 
       
 
@@ -57,7 +59,15 @@ export default new Router({
       meta:{
         title:'Login'
       }
-  },
+    },
+    {
+      path: '/example',
+      name: 'example',
+      component:example,
+      meta:{
+        title:'GUESS NUMBER'
+      }
+    },
     
   ]
 })

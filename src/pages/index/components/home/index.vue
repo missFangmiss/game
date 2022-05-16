@@ -16,8 +16,11 @@
                 <p class="_samll">GAME IN PROGRESS</p>
             </div>
         </div>
-        
-        <div class="link">HOW TO PLAY</div>
+        <div>
+            <div class="_act">Account Balance</div>
+            <div class="_act">₹{{account}}</div>
+            <div class="link" @click="goExample">HOW TO PLAY</div>
+        </div>
     </div>
 </template>
 <script>
@@ -34,6 +37,7 @@ export default {
             time: '',
             total: '',
             isLoading: false,
+            account:3000
         }
     },
     mounted(){
@@ -47,14 +51,15 @@ export default {
                 let rate = Number(info.rate) || 0,
                     fee = Number(info.entrance_fee) || 0;
                 this.total = (fee*10) - (fee*10)*rate*0.01;
-                // info.total = this.total;
-                // sessionStorage.setItem('gameInfo',JSON.stringify(info))
+                info.total = this.total;
+                sessionStorage.setItem('gameInfo',JSON.stringify(info))
                 
             }).catch(e=>{
                 this.$toast('CONFIG ERROR!')
                 return;
             })
         },
+        //TODO如果用户是第一次玩 要去流程
         joinGame() {
             this.isLoading = true;
             h5GameSearch({route:'Game_selGame'}).then(res=>{
@@ -68,13 +73,16 @@ export default {
         },
         goHistory() {
             this.$router.push('/history')
+        },
+        goExample(){
+            this.$router.push('/example')
         }
     }
 }
 </script>
 <style scoped>
     .home{
-        padding: 60px 15px;
+        padding: 60px 15px 20px 15px;
         min-height: 100vh;
         box-sizing: border-box;
         display: flex;
@@ -82,7 +90,7 @@ export default {
     }
     ._top{
         flex:1;
-        padding-bottom: 30px;
+        padding-bottom: 20px;
     }
     .logo{
         display: block;
@@ -130,13 +138,18 @@ export default {
     ._samll{
         font-size: 12px;
     }
+    ._act{
+        font-size: 12px;
+        color: #fff;
+        text-align: center;
+    }
     .link{
         font-size: 12px;
         color: #4A5E94;
         text-align: center;
         /* position: fixed; */
         /* padding-bottom: 30px; */
-        margin: auto;
+        margin: 20px auto 0 auto;
         text-underline-offset: 4px;
         text-decoration: underline;
     }
