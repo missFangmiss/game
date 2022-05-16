@@ -1,8 +1,9 @@
 <template>
     <div class="history">
+        <div class="divid" v-if="listIng.length>0 || listYet.length>0">—— GAME IN PROGRESS ——</div>
         <div class="item  _ing" v-for="(item) in listYet" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
-                <p class="_gameId">GAME ID : {{item.game_id}}</p>
+                <p class="_gameId">{{item.game_id}}</p>
                 <p class="status _lose _draw"><span class="seconds">waiting</span></p>
             </div>
             <div class="_center">
@@ -16,7 +17,7 @@
 
         <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
-                <p class="_gameId">GAME ID : {{item.game_id}}</p>
+                <p class="_gameId">{{item.game_id}}</p>
                 <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span></p>
             </div>
             <div class="_center">
@@ -28,10 +29,10 @@
                 <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div>
             </div>
         </div>
-        <div class="divid" v-if="listIng.length>0">—— GAME IN PROGRESS ——</div>
+        <div class="divid" v-if="listEd.length>0">—— GAME IN HISTORY ——</div>
         <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id" @click="goResult(item.game_id)">
             <div class="_top">
-                <p class="_gameId">GAME ID : {{item.game_id}}</p>
+                <p class="_gameId">{{item.game_id}}</p>
                 <!-- 1赢，2输，3平 -->
                 <p :class="['status', {_lose:item.win_status==2},{_draw:item.win_status==3}]">{{item.win_status==1?'WIN':(item.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
             </div>
@@ -193,7 +194,7 @@ export default {
     }
     ._bottom{
         color: #555;
-        font-size: 12px;
+        font-size: 11px;
         border-top: 1PX solid #e1e1e1;
         padding-top: 5px;
         margin-top: 10px;
@@ -227,7 +228,7 @@ export default {
         display: flex;
         justify-content: space-between;
         color: #555;
-        font-size: 12px;
+        font-size: 11px;
         margin-top: 20px;
     }
     ._ing .numChosed{
@@ -253,10 +254,14 @@ export default {
         background: #F7924B;
         border-radius: 2px;
         color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: 3px;
+        /* display: flex; */
+        /* align-items: center; */
+        /* justify-content: center; */
+        display: inline-block;
+        text-align: center;
+        padding-bottom: 2px;
+        /* box-sizing: border-box; */
+        margin-left: 2px;
     }
     ._time{
         width: 15px;

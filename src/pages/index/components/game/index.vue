@@ -17,7 +17,7 @@
                 <div class="flip">
                     <p class="_waiting _front">
                        <span v-if="status==0 || status==1">Need at least {{atLeastNum}} more players to start</span> 
-                       <span v-if="status==2">The game will start in  {{waitTime}}  seconds</span> 
+                       <span v-if="status==2">The game will start in  <span class="wait_bold">{{waitTime}}</span>  seconds</span> 
                     </p>
                     <p class="_waiting _back">New player : {{newName}} joins the game</p>
                 </div>
@@ -35,7 +35,7 @@
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
                 <van-cell title="Player" :value="inNum" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
-                <van-cell title="Earn up to" :value="'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Earn up to" :value="Number(inNum)<Number(minPerson)?'-':'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
             </div>
             <p class="tips" v-if="!isChoosn">Please click above to select a number</p>
         </div>
@@ -64,7 +64,7 @@
     </div>
 </template>
 <script>
-import { h5GameInfo,h5GamePrice, h5GameBuy, h5GameStart,h5GameSearch } from 'common@api/set.js'
+import { h5GameInfo,h5GamePrice, h5GameBuy,h5GameSearch } from 'common@api/set.js'
 var info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null;
 import { Popup, Cell, Dialog } from 'vant';
 export default {
@@ -77,7 +77,13 @@ export default {
     mounted(){
         this.userId = sessionStorage.getItem('userId')
         this.gameId = this.$route.query.gameId;
-        // this.getPrice();
+        h5GamePrice({route:'Game_getPrice'}).then(res=>{
+            this.price = res.respData.price;
+            if(this.status==3){
+                this.luckyNum  = this.price.slice(-1);
+            }
+        })
+        this.getPrice();
         this.getInfo();
     },
     beforeDestroy(){
@@ -125,32 +131,39 @@ export default {
     },
     watch:{
         status(newValue,oldValue){
-            if(newValue==2){
-                this.onCountDown('wwwwww')
+            if(newValue==2&&oldValue!=2){
+                // this.onCountDown('wwwwww')
             }
             if(newValue==3){
                 clearInterval(waitTimeOut)
+                clearInterval(infoTimeOut)
+                this.onStart()
                 gameTimeOut = setInterval(() => {
                     this.gameTimes = this.gameTimes-1;
                     if(this.gameTimes<=0){
                         clearInterval(priceTimeOut)
                         // this.status = 4;
-                        this.$router.replace({path:'/result',query:{id:this.gameId}})
+                        if(!this.isChoosn){
+                            this.$router.go(-1);
+                        }else{
+                            this.$router.replace({path:'/result',query:{id:this.gameId}})
+                        }
                         clearInterval(gameTimeOut)
+                        
                     }
                 }, 1000);
             }
         },
         inNum(newValue,oldValue){
-            if(newValue!=oldValue && oldValue!=0){
+            if(newValue!=oldValue && oldValue!=0 && this.status!=0){
                 clearInterval(waitTimeOut);
                 this.waitTime = info.wait_time;
                 this.newName =  this.name;
                 animationTimeOut = setTimeout(() => {
                     this.newName = '';
-                    if(this.status==2){
-                        this.onCountDown('bbbbb');
-                    }
+                    // if(this.status==2){
+                    //     this.onCountDown('bbbbb');
+                    // }
                     clearTimeout(animationTimeOut)
                 }, 2000);
                 
@@ -185,6 +198,8 @@ export default {
             clearInterval(infoTimeOut);
             if(!this.isChoosn){
                 this.isOut = true;
+                clearInterval(priceTimeOut);
+                clearInterval(gameTimeOut);
             }
         },
         getPrice(){
@@ -204,9 +219,16 @@ export default {
                     let resp = res.respData;
                     this.inNum = resp.num;
                     this.list = resp.num_obj;
-                    this.name = resp.new_player;
+                    this.name = resp.latest_join_user;
+                    this.status = resp.status;
+                    if(resp.status=='2'){
+                        let lastJoinTime = new Date(resp.latest_join_time.replace(/-/g,"/")).getTime();
+                        let nowTime = new Date().getTime();
+                        let timeCharge = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
+                        this.waitTime = timeCharge>0 ? timeCharge : 0;
+                    }
                 })
-            }, 2000);//TODO
+            }, 1000);//TODO
         },
         getInfo(){
             h5GameInfo({route:'Game_gameInfo',game_id:this.gameId}).then(res=>{
@@ -221,6 +243,7 @@ export default {
                 this.rate = resp.rate;
                 this.waitTime = resp.wait_time;
                 this.gameTimes = resp.game_time;
+                this.name = "";
                 this.total = (this.fee*10) - (this.fee*10)*this.rate*0.01;
 
 
@@ -229,13 +252,13 @@ export default {
                     let lastJoinTime = new Date(resp.latest_join_time.replace(/-/g,"/")).getTime();
                     let nowTime = new Date().getTime();
                     this.waitTime = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
-                    console.log("wait----+"+this.waitTime)
                 }
                 console.log(resp.status)
                 if(resp.status=='3'){
                     let endTime = new Date(resp.end_time.replace(/-/g,"/")).getTime();
                     let nowTime = new Date().getTime();
-                    this.gameTimes = ((endTime - nowTime) / 1000).toFixed(0);
+                    let lastTime = ((endTime - nowTime) / 1000).toFixed(0);
+                    this.gameTimes = lastTime>0 ? lastTime : 0;
                 }
 
                 this.status = resp.status;// 0 初始化；1开始前；2准备开始；3进行中；4已结束
@@ -249,7 +272,6 @@ export default {
                    return item.user_id == this.userId
                 })
                 if(resp.status!='3' && resp.status!='4'){
-                    console.log('1111')
                     this.onCycle()
                 }
                 
@@ -257,7 +279,12 @@ export default {
         },
         //选中数字 弹出弹窗
         onChooseNum(num,id){
-            if(id&&id!='') return;
+            if(id&&id!='') { 
+                if(id!=this.userId) { 
+                    this.$toast('The number '+num+' has been selected by another player');
+                }
+                return;
+            }
             if(this.isChoosn) return;
 
             this.chosedNum = num;
@@ -278,13 +305,20 @@ export default {
         },
         //out时返回
         handleCancel() {
-            this.$router.go(-1)
+            this.$router.replace('/')
         },
         //重新开始一场
         handleConfirm(){
+            clearInterval(infoTimeOut)
+            clearInterval(gameTimeOut)
+            clearInterval(waitTimeOut)
             h5GameSearch({route:'Game_selGame'}).then(res=>{
                 let resp = res.respData;
                 this.$router.replace({path:'/game',query:{gameId:resp.game_id}})
+                this.gameId = resp.game_id;
+                this.getInfo()
+                this.getPrice()
+
             }).catch(e=>{
                 this.$router.go(-1)
             })
@@ -422,6 +456,10 @@ export default {
         left: 0;
         right: 0;
         backface-visibility:hidden;
+    }
+    .wait_bold{
+        font-size: 16px;
+        font-weight: bold;
     }
     ._front{
         background: #F7924B;

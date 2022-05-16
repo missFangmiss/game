@@ -115,6 +115,7 @@ export default {
         font-size: 17px;
         background: #F7924B;
         margin: auto;
+        border:none;
     }
     .under{
         background: #4A5E94;
