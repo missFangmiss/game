@@ -79,3 +79,19 @@ export function h5GameResult(data) {
     data
   })
 }
+
+export function h5GameIndex(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}
+
+export function h5Record(data) {
+  return request({
+    url: '/entry',
+    method: 'post',
+    data
+  })
+}

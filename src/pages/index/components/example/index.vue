@@ -99,6 +99,7 @@ export default {
         [Overlay.name]: Overlay,
     },
     mounted(){
+        window.scrollTo(0,0);
         info = JSON.parse(sessionStorage.getItem('gameInfo')) || {};
         this.inNum = 0;
         this.minPerson = info.min_num;

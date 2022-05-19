@@ -17,14 +17,14 @@
             </div>
         </div>
         <div>
-            <div class="_act">Account Balance</div>
-            <div class="_act">₹{{account}}</div>
+            <!-- <div class="_act">Account Balance</div>
+            <div class="_act">₹{{account}}</div> -->
             <div class="link" @click="goExample">HOW TO PLAY</div>
         </div>
     </div>
 </template>
 <script>
-import { h5GameSet, h5GameSearch } from 'common@api/set.js'
+import { h5GameSet, h5GameSearch, h5GameIndex, h5Record } from 'common@api/set.js'
 import { Button } from 'vant';
 
 export default {
@@ -37,14 +37,17 @@ export default {
             time: '',
             total: '',
             isLoading: false,
-            account:3000
+            account:3000,
+            token:'17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51',
+            isYet:1,//1非第一次 0第一次
         }
     },
     mounted(){
+        this.getConfig();
         this.getInfo();
     },
     methods: {
-        getInfo(){
+        getConfig(){
             h5GameSet({route:'Game_gameConfig'}).then(res=>{
                 let info = res.respData;
                 this.time = info.game_time;
@@ -59,17 +62,36 @@ export default {
                 return;
             })
         },
+        getInfo(){
+            h5GameIndex({route:'Game_getPrice',token:this.token}).then(res=>{
+                let info = res.respData;
+                sessionStorage.setItem('userId',info.user_id);
+                this.isYet = info.is_first;
+                
+            }).catch(e=>{
+                this.$toast('CONFIG ERROR!')
+                return;
+            })
+        },
         //TODO如果用户是第一次玩 要去流程
         joinGame() {
-            this.isLoading = true;
-            h5GameSearch({route:'Game_selGame'}).then(res=>{
-                let resp = res.respData;
-                this.$router.push({path:'/game',query:{gameId:resp.game_id}})
-                this.isLoading = false;
-            }).catch(e=>{
-                this.isLoading = false;
-                console.log(e)
-            })
+            if(!this.isYet){
+                h5Record({route:'Game_isFirstHandle',user_id:sessionStorage.getItem('userId')}).then(res=>{
+                    this.$router.push('/example')
+                })
+                return;
+            }else{
+                this.isLoading = true;
+                h5GameSearch({route:'Game_selGame'}).then(res=>{
+                    let resp = res.respData;
+                    this.$router.push({path:'/game',query:{gameId:resp.game_id}})
+                    this.isLoading = false;
+                }).catch(e=>{
+                    this.isLoading = false;
+                    console.log(e)
+                })
+            }
+            
         },
         goHistory() {
             this.$router.push('/history')
@@ -149,7 +171,7 @@ export default {
         text-align: center;
         /* position: fixed; */
         /* padding-bottom: 30px; */
-        margin: 20px auto 0 auto;
+        margin: auto auto 0 auto;
         text-underline-offset: 4px;
         text-decoration: underline;
     }
