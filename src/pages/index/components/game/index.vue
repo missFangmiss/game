@@ -77,20 +77,28 @@ export default {
     mounted(){
         this.userId = sessionStorage.getItem('userId')
         this.gameId = this.$route.query.gameId;
-        h5GamePrice({route:'Game_getPrice'}).then(res=>{
-            this.price = res.respData.price;
-            if(this.status==3){
-                this.luckyNum  = this.price.slice(-1);
-            }
-        })
-        this.getPrice();
-        this.getInfo();
+        
+        // h5GamePrice({route:'Game_getPrice'}).then(res=>{
+        //     this.price = res.respData.price;
+        //     if(this.status==3){
+        //         this.luckyNum  = this.price.slice(-1);
+        //     }
+        // })
+
+        this.initWebSocket();
+        // this.onLogin();
+
+    
+        // this.getPrice();
+        // this.getInfo();
     },
     beforeDestroy(){
+        console.log('beforeDestroy')
         clearInterval(priceTimeOut)
         clearInterval(infoTimeOut)
         clearInterval(gameTimeOut)
         clearInterval(waitTimeOut)
+        this.$socket.close();
     },
     data(){
         return{
@@ -128,6 +136,7 @@ export default {
         actualTotal(){
             return (this.inNum*this.fee - this.inNum*this.fee*this.rate*0.01).toFixed(2);
         },
+        
     },
     watch:{
         status(newValue,oldValue){
@@ -184,6 +193,58 @@ export default {
         }
     },
     methods:{
+        // 初始化weosocket
+		initWebSocket() {
+            this.$connect();
+			this.$socket.onopen = this.websocketonopen;//连接成功方法
+			this.$socket.onerror = this.websocketonerror;//报错方法
+			this.$socket.onmessage = this.websocketonmessage;// 接收端返回或推送信息的方法
+			this.$socket.onclose = this.websocketclose;//关闭
+		},
+		// 链接ws服务器，e.target.readyState = 0/1/2/3   0 CONNECTING ,1 OPEN, 2 CLOSING, 3 CLOSED
+		websocketonopen(e) {
+			console.log('WebSocket连接成功,app.vue', e);
+            this.onLogin();
+		},
+        websocketonerror(e) {
+            console.log(e);
+            //错误
+            console.log("WebSocket连接发生错误");
+        },
+		// 接收端发送过来的信息，整个项目接收信息的唯一入口
+		websocketonmessage(e) {
+			console.log('onmessage------')
+			if (!e.data) {return;}
+			let res = JSON.parse(e.data);
+			console.log(res)
+			if(res.code != 0){//返回失败信息
+                this.$toast(res.msg);
+				console.log(res.msg)
+			}
+            if(res.cmd=='signin'&&res.code==0){
+                this.onGetPrice()
+            }
+			//
+			//端返回成功信息
+			if (res.cmd=='subscribe-ticker'&&res.code == 0 && res.data.length>=4) {
+                console.log(res.data[3])
+				this.price = String(res.data[3].toFixed(2))
+			}
+		},
+        websocketclose(e) {
+            console.log(e)
+            //关闭链接时触发
+            var code = e.code;//  状态码表 https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent
+            var reason = e.reason;
+            var wasClean = e.wasClean;
+            console.log(code,reason,wasClean);
+        },
+        onLogin(){
+            this.$socket.send(JSON.stringify({"cmd":"signin","args":["17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51"]}));
+        },
+        onGetPrice(){
+            this.$socket.send(JSON.stringify({"cmd":"subscribe-ticker","args":["bo.btc.usd.-"]}));
+        },
         onCountDown(type){
             console.log(type)
             waitTimeOut = setInterval(() => {

@@ -63,7 +63,7 @@ export default {
             })
         },
         getInfo(){
-            h5GameIndex({route:'Game_getPrice',token:this.token}).then(res=>{
+            h5GameIndex({route:'User_userInfo',token:this.token}).then(res=>{
                 let info = res.respData;
                 sessionStorage.setItem('userId',info.user_id);
                 this.isYet = info.is_first;
