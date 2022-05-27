@@ -33,16 +33,20 @@ export default {
         [Button.name]: Button,
     },
     data(){
+        //17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51
+        //d72110bf669fc24a9dbc650e79a51b037ecb77bb665a4325fafc99e17382a3f1
+        //115f5f5dffe36eb737ba087ea751c6877a34817c4e807cc728e820293d5e8757
         return{
             time: '',
             total: '',
             isLoading: false,
             account:3000,
-            token:'17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51',
+            token:'',
             isYet:1,//1非第一次 0第一次
         }
     },
     mounted(){
+        this.token = this.token || sessionStorage.getItem('utoken')
         this.getConfig();
         this.getInfo();
     },
@@ -58,25 +62,35 @@ export default {
                 sessionStorage.setItem('gameInfo',JSON.stringify(info))
                 
             }).catch(e=>{
-                this.$toast('CONFIG ERROR!')
+                // this.$toast('CONFIG ERROR!')
                 return;
             })
         },
         getInfo(){
+            // if(!!sessionStorage.getItem('userId')) return;
+            this.$toast({
+                message:'loading...',
+                type:'loading',
+                forbidClick:true,
+                duration:0
+            })
             h5GameIndex({route:'User_userInfo',token:this.token}).then(res=>{
+                this.$toast.clear();
                 let info = res.respData;
                 sessionStorage.setItem('userId',info.user_id);
                 this.isYet = info.is_first;
                 
             }).catch(e=>{
-                this.$toast('CONFIG ERROR!')
+                this.$toast.clear();
+                // this.$toast('CONFIG ERROR!')
                 return;
             })
         },
         //TODO如果用户是第一次玩 要去流程
         joinGame() {
+            if(!!sessionStorage.getItem('userId')) return;
             if(!this.isYet){
-                h5Record({route:'Game_isFirstHandle',user_id:sessionStorage.getItem('userId')}).then(res=>{
+                h5Record({route:'User_isFirstHandle',user_id:sessionStorage.getItem('userId')}).then(res=>{
                     this.$router.push('/example')
                 })
                 return;

@@ -25,9 +25,9 @@
             
             <div class="numChooseBox">
                 <div v-for="(item,index) in list" :key="index" class="numberBox" @click="onChooseNum(item.num,item.user_id)" v-show="(status==3&&item.user_id!='') || status!=3">
-                    <div :class="['number',{choosen:item.user_id,isMeChoose:chosedNum==item.num||item.user_id==userId}]">{{item.num}}</div>
+                    <div :class="['number',{choosen:item.user_id,isMeChoose:chosedNum==item.num||(item.user_id&&(item.user_id.split(',')[0]==userId))}]">{{item.num}}</div>
                     <div :class="['shadow',{isNumShadow:luckyNum==item.num}]"></div>
-                    <p class="name">{{item.user_id}}</p>
+                    <p class="name">{{item.user_id | getName}}</p>
                 </div>
             </div>
             <div v-if="isChoosn">
@@ -65,7 +65,7 @@
 </template>
 <script>
 import { h5GameInfo,h5GamePrice, h5GameBuy,h5GameSearch } from 'common@api/set.js'
-var info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null;
+var info = null, waitTimeOut = null, gameTimeOut = null, animationTimeOut = null, priceTimeOut = null, infoTimeOut = null, numTimeOut = null;
 import { Popup, Cell, Dialog } from 'vant';
 export default {
     name: 'game',
@@ -78,30 +78,23 @@ export default {
         this.userId = sessionStorage.getItem('userId')
         this.gameId = this.$route.query.gameId;
         
-        // h5GamePrice({route:'Game_getPrice'}).then(res=>{
-        //     this.price = res.respData.price;
-        //     if(this.status==3){
-        //         this.luckyNum  = this.price.slice(-1);
-        //     }
-        // })
-
-        this.initWebSocket();
-        // this.onLogin();
+        this.onPrice()
 
     
-        // this.getPrice();
-        // this.getInfo();
+        this.getPrice();
+        this.getInfo();
     },
     beforeDestroy(){
-        console.log('beforeDestroy')
         clearInterval(priceTimeOut)
         clearInterval(infoTimeOut)
         clearInterval(gameTimeOut)
         clearInterval(waitTimeOut)
-        this.$socket.close();
     },
     data(){
         return{
+            noResponse:0,
+            symbol:'bo.btc.usd.-',
+            params:1,
             userId:'',      //userId
             price:'',       //实时金额
             minPerson:0,    //最低入场人数
@@ -177,7 +170,19 @@ export default {
                 }, 2000);
                 
             }
-        }
+        },
+        noResponse(newValue,oldValue){
+            if(newValue==2){
+                numTimeOut = setInterval(() => {
+                    let price = this.price.slice(0,this.price.length-1);
+                    let lastNum = Math.floor(Math.random()*10);
+                    this.price = price+lastNum;
+                }, 1000);
+                
+            }else{
+                clearInterval(numTimeOut)
+            }
+        },
 
     },
     filters:{
@@ -190,61 +195,17 @@ export default {
         },
         notlastNum(value){
             return value.slice(0,value.length-1)
+        },
+        getName(value){
+            let name = "";
+            if(value&&value.indexOf(",")>-1){
+                let array = value.split(",");
+                name = array[1]
+            }
+            return name;
         }
     },
     methods:{
-        // 初始化weosocket
-		initWebSocket() {
-            this.$connect();
-			this.$socket.onopen = this.websocketonopen;//连接成功方法
-			this.$socket.onerror = this.websocketonerror;//报错方法
-			this.$socket.onmessage = this.websocketonmessage;// 接收端返回或推送信息的方法
-			this.$socket.onclose = this.websocketclose;//关闭
-		},
-		// 链接ws服务器，e.target.readyState = 0/1/2/3   0 CONNECTING ,1 OPEN, 2 CLOSING, 3 CLOSED
-		websocketonopen(e) {
-			console.log('WebSocket连接成功,app.vue', e);
-            this.onLogin();
-		},
-        websocketonerror(e) {
-            console.log(e);
-            //错误
-            console.log("WebSocket连接发生错误");
-        },
-		// 接收端发送过来的信息，整个项目接收信息的唯一入口
-		websocketonmessage(e) {
-			console.log('onmessage------')
-			if (!e.data) {return;}
-			let res = JSON.parse(e.data);
-			console.log(res)
-			if(res.code != 0){//返回失败信息
-                this.$toast(res.msg);
-				console.log(res.msg)
-			}
-            if(res.cmd=='signin'&&res.code==0){
-                this.onGetPrice()
-            }
-			//
-			//端返回成功信息
-			if (res.cmd=='subscribe-ticker'&&res.code == 0 && res.data.length>=4) {
-                console.log(res.data[3])
-				this.price = String(res.data[3].toFixed(2))
-			}
-		},
-        websocketclose(e) {
-            console.log(e)
-            //关闭链接时触发
-            var code = e.code;//  状态码表 https://developer.mozilla.org/zh-CN/docs/Web/API/CloseEvent
-            var reason = e.reason;
-            var wasClean = e.wasClean;
-            console.log(code,reason,wasClean);
-        },
-        onLogin(){
-            this.$socket.send(JSON.stringify({"cmd":"signin","args":["17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51"]}));
-        },
-        onGetPrice(){
-            this.$socket.send(JSON.stringify({"cmd":"subscribe-ticker","args":["bo.btc.usd.-"]}));
-        },
         onCountDown(type){
             console.log(type)
             waitTimeOut = setInterval(() => {
@@ -258,19 +219,34 @@ export default {
         onStart(){
             clearInterval(infoTimeOut);
             if(!this.isChoosn){
+                this.show = false;
                 this.isOut = true;
                 clearInterval(priceTimeOut);
                 clearInterval(gameTimeOut);
             }
         },
-        getPrice(){
-            priceTimeOut = setInterval(() => {
-                h5GamePrice({route:'Game_getPrice'}).then(res=>{
-                    this.price = res.respData.price;
+        onPrice(){
+            let timeNow = Date.parse(new Date()) - 2000;
+            h5GamePrice({timestamp:timeNow,rows:1,type:1,symbol:this.symbol}).then(res=>{
+                if(res.data.length>0){
+                    this.noResponse = 0;
+                    clearInterval(numTimeOut)
+                    this.price = String(res.data[0][1].toFixed(2));
                     if(this.status==3){
                         this.luckyNum  = this.price.slice(-1);
                     }
-                })
+                }else{
+                    if(this.noResponse>=2) return;
+                    else{this.noResponse = this.noResponse+1;}
+                    // this.$toast('FETCH FAIL');
+                    // clearInterval(priceTimeOut)
+                }
+                
+            })
+        },
+        getPrice(){
+            priceTimeOut = setInterval(() => {
+                this.onPrice();
             }, 1000);//TODO
             
         },
@@ -292,6 +268,7 @@ export default {
             }, 1000);//TODO
         },
         getInfo(){
+            this.luckyNum = -1;
             h5GameInfo({route:'Game_gameInfo',game_id:this.gameId}).then(res=>{
                 let resp = res.respData;
                 if(resp.status=='4'){
@@ -326,7 +303,7 @@ export default {
 
                 this.list = resp.num_obj || [];
                 let isChoosed = this.list.some(item=>{
-                    if(item.user_id == this.userId){
+                    if(item.user_id&&item.user_id.split(",")[0] == this.userId){
                         this.chosedNum = item.num;
                         this.isChoosn = true;
                     }
@@ -353,6 +330,12 @@ export default {
         },
         //确认数字
         handleChoose(){
+            this.$toast({
+                message:'',
+                type:'loading',
+                forbidClick:true,
+                duration:0
+            })
             h5GameBuy({ 
                 route:'Game_joinGame',
                 game_id:this.gameId,
@@ -362,6 +345,10 @@ export default {
                 this.$toast('SUCCESS');
                 this.show = false;
                 this.isChoosn = true;
+            }).catch(e=>{
+                this.show = false;
+                this.$toast.clear();
+                return;
             })
         },
         //out时返回

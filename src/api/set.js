@@ -50,9 +50,10 @@ export function h5GameRecord(data) {
 
 export function h5GamePrice(data) {
   return request({
-    url: '/entry',
-    method: 'post',
-    data
+    url: 'https://testapi.okoption.top/api/market/time-sharing',//'https://data.mifengcha.com/api/v3/price',
+    method: 'get',
+    params:data,
+    data:{}
   })
 }
 

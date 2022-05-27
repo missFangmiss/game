@@ -1,7 +1,7 @@
 <template>
     <div class="history">
         <div class="divid" v-if="listIng.length>0 || listYet.length>0">—— GAME IN PROGRESS ——</div>
-        <div class="item  _ing" v-for="(item) in listYet" :key="item.game_id" @click="goGame(item.game_id)">
+        <div class="item  _ing" v-for="(item,index) in listYet" :key="index" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
                 <p class="status _lose _draw"><span class="seconds">waiting</span></p>
@@ -33,17 +33,17 @@
         <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id" @click="goResult(item.game_id)">
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
-                <!-- 1赢，2输，3平 -->
-                <p :class="['status', {_lose:item.win_status==2},{_draw:item.win_status==3}]">{{item.win_status==1?'WIN':(item.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
+                <!-- 1赢，2输，3平，5:等待-->
+                <p :class="['status', {_lose:item.win_status==2},{_draw:item.win_status==3}]">{{item.win_status==1?'WIN':(item.win_status==2?'NOT VERY LUCKY':(item.win_status==5?'Waiting For Results':'DRAW'))}}</p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
                     <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info"><p>Amount</p> <p>₹{{item.amount}}</p></div>
-                    <div class="info _last"><p>Earning</p><p>₹{{item.earning}}</p></div>
+                    <div class="info"><p>Amount</p> <p> ₹{{item.amount}}</p></div>
+                    <div class="info _last"><p>Earning</p><p><span v-if="item.win_status==5">-</span> <span v-else> ₹{{item.earning}}</span></p></div>
                 </div>
-                <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p><p class="_numshow">Closing Price: {{item.close_price |notlastNum}} <span class="_lastNum">{{item.close_price | lastNum}}</span></p></div>
+                <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p><p class="_numshow">Closing Price: {{item.win_status==5 ?'- ' : item.close_price | notlastNum}} <span class="_lastNum" v-if="item.win_status!=5">{{item.close_price | lastNum}}</span></p></div>
             </div>
             <div class="_bottom">Closing Time: {{item.end_time}}</div>
         </div>

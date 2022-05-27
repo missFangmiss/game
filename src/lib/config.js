@@ -27,7 +27,7 @@ switch(process.env.ENV_CONFIG){
 const service = axios.create({
     baseURL: baseUrl,
     withCredentials: false, // send cookies when cross-domain requests
-    timeout: 5000 // request timeout
+    timeout: 30000 // request timeout
 })
 
 
@@ -40,7 +40,7 @@ service.interceptors.request.use((config) => {
         // config.headers['Authorization'] = 'Bearer '+token
         config.data.token = token
     }
-    let params = JSON.parse(JSON.stringify(config.data))
+    let params = config.data ? JSON.parse(JSON.stringify(config.data)) : null
 
 	// 将post请求强制降低为一般请求 
     if(config.method  === 'post'){
@@ -56,10 +56,19 @@ service.interceptors.response.use((res) =>{
     if(!res.data){
         return Promise.reject(res);
     }
+    if(res.config.url.indexOf('time-sharing')>-1){
+        if(res.data.code == '0'){
+            return res.data;
+        }else{
+            Toast.fail(res.data.msg || 'Error');
+            return Promise.reject(res.data);
+        }
+    }
     if(res.data.respCode!=='00'){
         if(res.config.url.indexOf('entry')>-1){
             Toast.fail(res.data.respDesc || 'Error');
-        }else{
+        }
+        else{
             message.error({
                 content:res.data.respDesc || 'Error',
                 duration:2,
@@ -71,7 +80,6 @@ service.interceptors.response.use((res) =>{
                 }, 1000);
                 
             }
-            
         }
         
         return Promise.reject(res.data);

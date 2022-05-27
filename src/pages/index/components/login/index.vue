@@ -5,8 +5,8 @@
             v-model="username"
             name="username"
             label="用户ID"
-            placeholder="6位数字用于测试"
-            :rules="[{ required: true, message: '6位数字用于测试' }]"
+            placeholder="token"
+            :rules="[{ required: true, message: '请输入token' }]"
         />
         <div style="margin: 16px;">
             <van-button round block type="info" native-type="submit">提交</van-button>
@@ -31,7 +31,7 @@ export default {
     methods: {
         onSubmit(values) {
             this.$router.push('/')
-            sessionStorage.setItem('userId',values.username)
+            sessionStorage.setItem('utoken',values.username)
         },
     },
 

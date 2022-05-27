@@ -7,13 +7,14 @@
                     <img src="../../../../static/images/icon_win.png" alt="" v-if="gameInfo.win_status==1">
                     <img src="../../../../static/images/icon_draw.png" alt=""  v-if="gameInfo.win_status==3">
                     <img src="../../../../static/images/icon_lost.png" alt="" v-if="gameInfo.win_status==2">
+                    <img src="../../../../static/images/icon_wait.jpg" alt="" v-if="gameInfo.win_status==5">
                 </div>
-                <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':'DRAW')}}</p>
-                <p class="status">₹{{gameInfo.earning}}</p>
+                <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':(gameInfo.win_status==5?'Waiting For Results':'DRAW'))}}</p>
+                <p class="status" v-if="gameInfo.win_status!=5">₹{{gameInfo.earning}}</p>
                 <div class="info">
                     <div class="priceInfo">
                         <p class="title">Closing Price Number</p>
-                        <p class="price">{{gameInfo.close_price | notlastNum}} <span>{{gameInfo.close_price | lastNum}}</span></p>
+                        <p class="price">{{gameInfo.win_status==5 ? '— ' :gameInfo.close_price | notlastNum}} <span v-if="gameInfo.win_status!=5">{{gameInfo.close_price | lastNum}}</span></p>
                         <p class="small">Closing Time</p>
                         <p class="small">{{gameInfo.end_time}}</p>
                     </div>
@@ -25,7 +26,7 @@
                         <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
                     </div>
                 </div>
-                <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</van-button>
+                <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">{{gameInfo.win_status==5 ? 'Refresh' : 'PLAY AGAIN'}}</van-button>
                 <div class="link" @click="goHome">HOME</div>
             </div>
             
@@ -57,6 +58,9 @@ export default {
             }
         }
     },
+    beforeDestroy(){
+        clearTimeout(resultTimeOut)
+    },
     filters:{
         lastNum(value){
             return value.slice(-1)
@@ -67,29 +71,36 @@ export default {
     },
     methods:{
         joinGame() {
-            this.isLoading = true;
-            h5GameSearch({route:'Game_selGame'}).then(res=>{
-                let resp = res.respData;
-                this.$router.push({path:'/game',query:{gameId:resp.game_id}})
-                this.isLoading = false;
-            }).catch(e=>{
-                this.isLoading = false;
-                console.log(e)
-            })
+            if(this.gameInfo.win_status==5){
+                location.reload()
+            }else{
+                this.isLoading = true;
+                h5GameSearch({route:'Game_selGame'}).then(res=>{
+                    let resp = res.respData;
+                    this.$router.push({path:'/game',query:{gameId:resp.game_id}})
+                    this.isLoading = false;
+                }).catch(e=>{
+                    this.isLoading = false;
+                    console.log(e)
+                })
+            }
         },
         queryResult(){
             let that = this;
-            resultTimeOut = setInterval(() => {
+            resultTimeOut = setTimeout(() => {
                 h5GameResult({route:'Game_gameRet',game_id:this.gameId,user_id:sessionStorage.getItem('userId')}).then(res=>{
-                    if(res.respData.close_price==''){
-                        ;
+                    if(res.respData.win_status=='5'){
+                        that.gameInfo = res.respData;
+                        that.noResult = false;
+                        clearTimeout(resultTimeOut);
                     }else{
-                        clearInterval(resultTimeOut)
+                        clearTimeout(resultTimeOut)
                         that.gameInfo = res.respData;
                         that.noResult = false;
                     }
                 })
             }, 2000);
+            
         },
         goHome(){
             this.$router.replace('/')
@@ -166,6 +177,7 @@ export default {
         align-items: center;
         justify-content: flex-end;
         margin-top: 10px;
+        height: 38px;
     }
     .priceChoosn{
         justify-content: flex-start;
