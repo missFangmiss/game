@@ -47,6 +47,7 @@ export default {
     data(){
         return{
             gameId:'',
+            waitTime:0,
             isLoading:false,
             noResult:true,
             gameInfo:{
@@ -59,7 +60,7 @@ export default {
         }
     },
     beforeDestroy(){
-        clearTimeout(resultTimeOut)
+        clearInterval(resultTimeOut)
     },
     filters:{
         lastNum(value){
@@ -87,19 +88,24 @@ export default {
         },
         queryResult(){
             let that = this;
-            resultTimeOut = setTimeout(() => {
+            resultTimeOut = setInterval(() => {
                 h5GameResult({route:'Game_gameRet',game_id:this.gameId,user_id:sessionStorage.getItem('userId')}).then(res=>{
+                    
                     if(res.respData.win_status=='5'){
-                        that.gameInfo = res.respData;
-                        that.noResult = false;
-                        clearTimeout(resultTimeOut);
+                        if(this.waitTime<=5){
+                            that.waitTime = this.waitTime+1;
+                        }else{
+                            that.gameInfo = res.respData;
+                            that.noResult = false;
+                            clearInterval(resultTimeOut);
+                        }
                     }else{
-                        clearTimeout(resultTimeOut)
+                        clearInterval(resultTimeOut)
                         that.gameInfo = res.respData;
                         that.noResult = false;
                     }
                 })
-            }, 2000);
+            }, 1000);
             
         },
         goHome(){

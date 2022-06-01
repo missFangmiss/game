@@ -264,6 +264,13 @@ export default {
                         let timeCharge = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
                         this.waitTime = timeCharge>0 ? timeCharge : 0;
                     }
+                    let isChoosed = this.list.some(item=>{
+                        if(item.user_id&&item.user_id.split(",")[0] == this.userId){
+                            this.chosedNum = item.num;
+                            this.isChoosn = true;
+                        }
+                        return item.user_id == this.userId
+                    })
                 })
             }, 1000);//TODO
         },
@@ -347,7 +354,7 @@ export default {
                 this.isChoosn = true;
             }).catch(e=>{
                 this.show = false;
-                this.$toast.clear();
+                // this.$toast.clear();
                 return;
             })
         },

@@ -3,7 +3,7 @@ import App from 'spa@comp_index/app'
 import router from './router'
 import 'lib-flexible/flexible'
 import { Toast } from 'vant';
-
+// Toast.setDefaultOptions({ duration: 3000 });
 Vue.use(Toast)
 
 

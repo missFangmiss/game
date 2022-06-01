@@ -81,14 +81,14 @@ export default {
                 this.isYet = info.is_first;
                 
             }).catch(e=>{
-                this.$toast.clear();
+                // this.$toast.clear();
                 // this.$toast('CONFIG ERROR!')
                 return;
             })
         },
         //TODO如果用户是第一次玩 要去流程
         joinGame() {
-            if(!!sessionStorage.getItem('userId')) return;
+            if(!sessionStorage.getItem('userId')) return;
             if(!this.isYet){
                 h5Record({route:'User_isFirstHandle',user_id:sessionStorage.getItem('userId')}).then(res=>{
                     this.$router.push('/example')
