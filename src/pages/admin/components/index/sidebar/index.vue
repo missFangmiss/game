@@ -40,50 +40,16 @@ export default {
                    key: 'home1',
                    title: '首页',
                    icon: 'home',
-               },
-               {
-                   key: 'daily',
-                   title: '按日统计',
-                   icon: 'fund',
-               },
-               {
-                   key: 'order',
-                   title: '订单列表',
-                   icon: 'schedule',
-               },
-               {
-                   key: 'glist',
-                   title: '游戏列表',
-                   icon: 'audit',
-               },
-               {
-                   key: 'setting',
-                   title: '系统配置',
-                   icon: 'setting',
-                   children: [
-                        {
-                            key: 'pay',
-                            title: '支付配置',
-                        },
-                        {
-                            key: 'set',
-                            title: '游戏配置',
-                        }                      
-                   ]
-               },
-               {
-                   key: 'search',
-                   title: '结果查询',
-                   icon: 'search',
-               },
+               }
            ]
 
        } 
     },
     mounted(){
         let userRoute = this.$store.getters.userRoute;
+        console.log(userRoute)
         this.userRouteName = userRoute;
-        // this.list = this.list.concat(userRoute); 
+        this.list = this.list.concat(userRoute); 
         let barSave = this.$store.state.Route.sideBar;
         console.log(barSave)
         if(barSave.expandBar){

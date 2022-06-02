@@ -46,11 +46,22 @@ export default {
         }
     },
     mounted(){
-        this.token = this.token || sessionStorage.getItem('utoken')
+        this.token = this.getQueryString('token');
+        if(!this.token){
+            this.$toast('NO IDENTIFY');
+            return;
+        }
+        // this.token = sessionStorage.getItem('utoken')
         this.getConfig();
         this.getInfo();
     },
     methods: {
+        getQueryString(name) {//获取key
+            let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            let r = window.location.search.substr(1).match(reg);//得到url的？部分，去掉？,进行正则匹配
+            if (r != null) return decodeURI(r[2]);//对字符串进行解码，得到的是key
+            return null;
+        },
         getConfig(){
             h5GameSet({route:'Game_gameConfig'}).then(res=>{
                 let info = res.respData;
@@ -86,7 +97,7 @@ export default {
                 return;
             })
         },
-        //TODO如果用户是第一次玩 要去流程
+        //如果用户是第一次玩 要去流程
         joinGame() {
             if(!sessionStorage.getItem('userId')) return;
             if(!this.isYet){

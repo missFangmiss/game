@@ -207,7 +207,6 @@ export default {
     },
     methods:{
         onCountDown(type){
-            console.log(type)
             waitTimeOut = setInterval(() => {
                 this.waitTime = this.waitTime-1;
                 if(this.waitTime<=0){
@@ -298,7 +297,6 @@ export default {
                     let nowTime = new Date().getTime();
                     this.waitTime = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
                 }
-                console.log(resp.status)
                 if(resp.status=='3'){
                     let endTime = new Date(resp.end_time.replace(/-/g,"/")).getTime();
                     let nowTime = new Date().getTime();
