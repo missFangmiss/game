@@ -20,6 +20,7 @@ router.beforeEach(async(route, from, next) => {
 			// next(`/login?redirect=${to.path}`)
 			next(`/login`);
 		}else{
+			console.log(store.getters.userInfo)
 			if(JSON.stringify(store.getters.userInfo)=='{}'){//没有路由和用信息
 				try {
 					await store.dispatch('User/setUserInfo');

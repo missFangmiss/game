@@ -32,7 +32,7 @@ export default {
        return {
            chosedMenu:['home1'],
            chosedMenuOpen:['home1'],
-           mapData:{home1:['home1'],daily:['daily'],order:['order'],glist:['glist'],setting:['pay','set']},
+           mapData:{home1:['home1'],daily:['daily'],order:['order'],glist:['glist'],setting:['pay','set'],search:['search']},
         //    list : [],
            userRouteName:'home1',
            list : [
@@ -70,7 +70,12 @@ export default {
                             title: '游戏配置',
                         }                      
                    ]
-               }
+               },
+               {
+                   key: 'search',
+                   title: '结果查询',
+                   icon: 'search',
+               },
            ]
 
        } 

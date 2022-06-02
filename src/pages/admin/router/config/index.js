@@ -78,6 +78,17 @@ export default [
                 )
             }
             ,{
+            	path: '/search',
+                name: "search",
+                meta: {
+                    title: '结果查询',
+                    requireAuth: true,
+                },
+                component: () => import(
+                    'spa@comp_admin/search/index.vue'
+                )
+            }
+            ,{
             	path: '/uppwd',
                 name: "uppwd",
                 meta: {

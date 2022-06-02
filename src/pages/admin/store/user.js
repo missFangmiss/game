@@ -14,6 +14,9 @@ import {loginInfo} from 'common@api/user.js'
                 state.userInfo = sessionStorage.getItem('userInfo') != null ? JSON.parse(sessionStorage.getItem('userInfo')) : {}
             }
 		},
+		clearInfo(state,user){
+			state.userInfo = {};
+		},
 		setUser(state,user){
 			if(user){
 				state.userInfo = user.adminInfo;

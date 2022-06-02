@@ -74,6 +74,11 @@
             </div>
         </van-popup>
         <van-overlay :show="showTips" z-index="9999">
+            <div class="top1Wrap" v-if="step==0">
+                <p>☆☆☆</p>
+                <p>Celebrate the launch of the game and get 100% of the profits during the period.</p>
+                <p>☆☆☆</p>
+            </div>
             <transition name="van-fade">
                 <div :class="['wrap','wrap'+step]" v-show="visible">
                     <div class="_tips">
@@ -478,6 +483,21 @@ export default {
         font-size: 14px;
         margin: 20px auto 30px auto;
         text-align: center;
+    }
+    .top1Wrap{
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: auto;
+        color: #7B5047;
+        max-width: 300px;
+        height: fit-content;
+        text-align: center;
+        top: 35px;
+        background: #fff;
+        padding: 15px;
+        box-sizing: border-box;
+        border-radius: 8px;
     }
     .wrap{
         position: absolute;

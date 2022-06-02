@@ -26,7 +26,6 @@ import {orderList} from 'common@api/list.js'
             postTableList() {
                 this.tableLoading = true;
                 let that = this;
-                that.tableLoading = false;
                 orderList(this.params).then(res=>{
                     let dataArray = [];
                     const pagination = { ...this.pagination };

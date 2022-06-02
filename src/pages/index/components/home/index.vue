@@ -181,7 +181,7 @@ export default {
     }
     .link{
         font-size: 12px;
-        color: #4A5E94;
+        color: #fff;
         text-align: center;
         /* position: fixed; */
         /* padding-bottom: 30px; */
