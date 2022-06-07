@@ -10,11 +10,16 @@
             <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
                 <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
             </van-button>
-            <div class="btn under" @click="goHistory">
+            <van-button class="btn under" @click="goHistory" :loading="isLoading2" loading-text="loading...">
                 <p>GAME HISTORY</p>
                 <p class="_samll">&</p>
                 <p class="_samll">GAME IN PROGRESS</p>
-            </div>
+            </van-button>
+            <!-- <div class="btn under" @click="goHistory">
+                <p>GAME HISTORY</p>
+                <p class="_samll">&</p>
+                <p class="_samll">GAME IN PROGRESS</p>
+            </div> -->
         </div>
         <div>
             <!-- <div class="_act">Account Balance</div>
@@ -43,6 +48,7 @@ export default {
             account:3000,
             token:'',
             isYet:1,//1非第一次 0第一次
+            isLoading2:false,
         }
     },
     mounted(){
@@ -119,10 +125,13 @@ export default {
             
         },
         goHistory() {
-            this.$router.push('/history')
+            if(!sessionStorage.getItem('userId')) return;
+            this.isLoading2 = true;
+            this.$router.push({path:'/history'})
+            this.isLoading2 = false;
         },
         goExample(){
-            this.$router.push('/example')
+            this.$router.push({path:'/example'})
         }
     }
 }

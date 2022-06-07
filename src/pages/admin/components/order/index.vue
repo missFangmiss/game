@@ -79,7 +79,7 @@
                     {title: '订单号',key: 'bill_no',dataIndex: 'bill_no',width: '11%'},
                     {title: '用户名',key: 'user_name',dataIndex: 'user_name',width: '12%'},
                     {title: '用户ID',key: 'user_id',dataIndex: 'user_id',width: '12%'},
-                    {title: '手机号',key: 'mobile',dataIndex: 'mobile',width: '10%'},
+                    {title: '手机号',key: 'mobile',dataIndex: 'mobile',width: '10%',customRender: (text,record,index) => { return text || '-'}},
                     {title: '消费金额',key: 'amount',dataIndex: 'amount',width: '10%'},
                     {title: '消费时间',key: 'create_time',dataIndex: 'create_time',width: '12%'},
                     {title: '游戏ID',key: 'game_id',dataIndex: 'game_id',width: '10%'},

@@ -118,14 +118,14 @@ const statusList = [
                     {title: '游戏ID',key: 'game_id',dataIndex: 'game_id',width: '9%'},
                     {title: '参与人数',key: 'num',dataIndex: 'num',width: '6%'},
                     {title: '付费总额',key: 'amount',dataIndex: 'amount',width: '10%'},
-                    {title: '状态',key: 'status',dataIndex: 'status',customRender: (text,record,index) => { console.log(record);if(text!=4){return statusList[text].text}else{if(record.is_finish==0) return '等待结果'; else{ return '已结束'} } },width: '8%'},
+                    {title: '状态',key: 'status',dataIndex: 'status',customRender: (text,record,index) => { if(text!=4){return statusList[text].text}else{if(record.is_finish==0) return '等待结果'; else{ return '已结束'} } },width: '8%'},
                     {title: '开始时间',key: 'begin_time',dataIndex: 'begin_time',width: '10%'},
                     {title: '结束时间',key: 'end_time',dataIndex: 'end_time',width: '10%'},
                     {title: '结束时数字',key: 'close_price',dataIndex: 'close_price',width: '8%'},
                     {title: '尾数',key: 'winning_num',dataIndex: 'winning_num',width: '6%'},
-                    {title: '赢家用户名',key: 'user_name',dataIndex: 'user_name',width: '10%'},
-                    {title: '赢家用户ID',key: 'user_id',dataIndex: 'user_id',width: '10%'},
-                    {title: '赢家手机号',key: 'mobile',dataIndex: 'mobile',width: '10%'},
+                    {title: '赢家用户名',key: 'user_name',dataIndex: 'user_name',width: '10%',customRender: (text,record,index) => { return text || '-'}},
+                    {title: '赢家用户ID',key: 'user_id',dataIndex: 'user_id',width: '10%',customRender: (text,record,index) => { return text || '-'}},
+                    {title: '赢家手机号',key: 'mobile',dataIndex: 'mobile',width: '10%',customRender: (text,record,index) => { return text || '-'}},
                 ],
                 //查询字段
                 searchItems: {

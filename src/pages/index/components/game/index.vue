@@ -453,6 +453,7 @@ export default {
         right: 0;
         top: 37px;
         margin: auto;
+        background-repeat: no-repeat;
     }
     .desc{
         margin-top: 32px;
