@@ -76,7 +76,7 @@
         <van-overlay :show="showTips" z-index="9999">
             <div class="top1Wrap" v-if="step==0">
                 <p>☆☆☆</p>
-                <p>Celebrate the launch of the game and get 100% of the profits during the period.</p>
+                <p>Celebrate the launch of the game and get 85% of the profits during the period.</p>
                 <p>☆☆☆</p>
             </div>
             <transition name="van-fade">

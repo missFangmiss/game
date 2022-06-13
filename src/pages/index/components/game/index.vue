@@ -323,7 +323,7 @@ export default {
         //选中数字 弹出弹窗
         onChooseNum(num,id){
             if(id&&id!='') { 
-                if(id!=this.userId) { 
+                if(id.split(',')[0]!=this.userId) { 
                     this.$toast('The number '+num+' has been selected by another player');
                 }
                 return;
