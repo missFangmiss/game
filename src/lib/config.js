@@ -27,7 +27,7 @@ switch(process.env.ENV_CONFIG){
         baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
         break
     case 'prod':
-        baseUrl = 'http://gg.paulaoption.com/'
+        baseUrl = 'https://gg.paulaoption.com/'
         //'http://147.139.34.208/guess/'
         // baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
         break
