@@ -1,6 +1,24 @@
 <template>
     <div class="game">
         <div class="gameTop">
+            <div class="_box">
+                <p>111111</p>
+                <div class="_numBox">
+                    <div v-for="(item,index) in priceArray" :class="['_numSingle',index!=priceArray.length-1 ? '' : '_last']"  :key="item">{{item}}</div>
+                </div>
+            </div>
+
+            <div :class="['_strip',{ing:newName!=''}]" v-if="status!=3">
+                <div class="flip">
+                    <p class="_waiting _front">
+                       <span v-if="status==0 || status==1">Need at least {{atLeastNum}} more players to start</span> 
+                       <span v-if="status==2">The game will start in  <span class="wait_bold">{{waitTime}}</span>  seconds</span> 
+                    </p>
+                    <p class="_waiting _back">New player : {{newName}} joins the game</p>
+                </div>
+            </div>
+
+
             <div class="priceBox">
                 <div class="price">
                     <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
@@ -78,11 +96,11 @@ export default {
         this.userId = sessionStorage.getItem('userId')
         this.gameId = this.$route.query.gameId;
         
-        this.onPrice()
+        // this.onPrice()
 
     
-        this.getPrice();
-        this.getInfo();
+        // this.getPrice();
+        // this.getInfo();
     },
     beforeDestroy(){
         clearInterval(priceTimeOut)
@@ -92,6 +110,7 @@ export default {
     },
     data(){
         return{
+            priceArray:[3,8,6,9,0,'.',2,7],
             noResponse:0,
             symbol:'bo.btc.usd.-',
             params:1,
@@ -387,12 +406,46 @@ export default {
 </script>
 <style scoped>
     .game{
-        padding: 15px;
+        padding: 15px 0;
         min-height: 100%;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
     }
+    ._box{
+        width: 368px;
+        height: 203px;
+        margin: auto;
+        background: url('../../../../static/images/numBg.png') no-repeat 100%/100%;
+    }
+    ._numBox{
+        margin: 78px auto 0 auto;
+        height: 40px;
+        width: 254px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #1B0186;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(-2px);
+
+    }
+    ._numSingle{
+        flex:1;
+        text-align: center;
+    }
+    ._last{
+        color: #F7924B;
+        font-size: 27px;
+    }
+    ._strip{
+        background: url('../../../../');
+    }
+
+/* ----------------------------------------------------- */
+/* ----------------------------------------------------- */
+/* ----------------------------------------------------- */
     .gameTop{
         flex:1;
     }

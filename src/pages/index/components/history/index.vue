@@ -1,24 +1,38 @@
 <template>
     <div class="history">
         <div class="divid" v-if="listIng.length>0 || listYet.length>0">—— GAME IN PROGRESS ——</div>
-        <div class="item  _ing" v-for="(item,index) in listYet" :key="index" @click="goGame(item.game_id)">
+        <div class="item  _ing" v-for="(item) in listYet" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
-                <p class="status _lose _draw"><span class="seconds">waiting</span></p>
+                <!-- 1赢，2输，3平，5:等待-->
+                <p class="status">
+                    <span v-if="item.win_status==0">Waiting</span>
+                    <span >
+                        <!-- v-if="item.win_status==4" -->
+                        <img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span>
+                    </span>
+                </p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
-                    <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
-                    <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
+                    <div class="chosedNum"><img src="" class="_numimage"><p>chosen number</p></div>
+                    <div class="info">
+                        <p>Player： <span>{{item.player_num}}</span></p>
+                        <p>Amount： <span>₹{{item.amount}}</span></p>
+                        <p>Opening Price： ₹{{item.earning}}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" @click="goGame(item.game_id)">
+        
+
+        <!-- <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" @click="goGame(item.game_id)">
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
-                <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span></p>
+                <p class="status _draw">
+                    <img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span><
+                /p>
             </div>
             <div class="_center">
                 <div class="choseInfo">
@@ -28,9 +42,9 @@
                 </div>
                 <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div>
             </div>
-        </div>
+        </div> -->
         <div class="divid" v-if="listEd.length>0">—— GAME IN HISTORY ——</div>
-        <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id" @click="goResult(item.game_id)">
+        <div class="item  " v-for="(item) in listYet" :key="item.game_id" @click="goResult(item.game_id)">
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
                 <!-- 1赢，2输，3平，5:等待-->
@@ -38,17 +52,19 @@
             </div>
             <div class="_center">
                 <div class="choseInfo">
-                    <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
-                    <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info"><p>Amount</p> <p> ₹{{item.amount}}</p></div>
-                    <div class="info _last"><p>Earning</p><p><span v-if="item.win_status==5">-</span> <span v-else> ₹{{item.earning}}</span></p></div>
+                    <div class="chosedNum"><img src="" class="_numimage"><p>chosen number</p></div>
+                    <div class="info">
+                        <p>Player： <span>{{item.player_num}}</span></p>
+                        <p>Amount： <span>₹{{item.amount}}</span></p>
+                        <p>Earning： <span v-if="item.win_status==5">-</span> <span v-else> ₹{{item.earning}}</span></p>
+                    </div>
                 </div>
-                <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p><p class="_numshow">Closing Price: {{item.win_status==5 ?'- ' : item.close_price | notlastNum}} <span class="_lastNum" v-if="item.win_status!=5">{{item.close_price | lastNum}}</span></p></div>
+                <div class="gameInfo"><p>Opening Price： <span>{{item.open_price}}</span></p><p class="_numshow">Closing Price： <span>{{item.win_status==5 ?'- ' : item.close_price | notlastNum}}</span> <span class="_lastNum" v-if="item.win_status!=5">{{item.close_price | lastNum}}</span></p></div>
+                <div class="_bottom">Closing Time: {{item.end_time}}</div>
             </div>
-            <div class="_bottom">Closing Time: {{item.end_time}}</div>
         </div>
         <van-empty image="search" description="NO DATA" v-if="isNull">
-            <van-button round color="#4A5E94" @click="join" :loading="isLoading" loading-text="loading...">Join a Game</van-button>
+            <van-button round color="linear-gradient(180deg, #BD26DB 0%, #620EB6 100%)" @click="join" :loading="isLoading" loading-text="loading...">Join a Game</van-button>
         </van-empty>
     </div>
 </template>
@@ -83,13 +99,14 @@ export default {
                 let list = res.respData;
                 this.isNull = list.length<=0 ? true : false;
                 let ingList = list.filter((item,index)=>{
-                    return item.win_status == '4'
+                    return item.win_status !='0' && item.win_status !='4'
+                    // return item.win_status == '4'//TODO
                 })
                 //倒计时
                 let nowTime  = new Date().getTime();
                 ingList.map(item=>{
                     let endTime = new Date(item.end_time.replace(/-/g,"/")).getTime();
-                    item.time = ( endTime - nowTime)
+                    item.time = 110//( endTime - nowTime)
                     return item;
                 })
 
@@ -102,7 +119,8 @@ export default {
                 })
 
                 this.listYet = list.filter((item,index)=>{
-                    return item.win_status == '0'
+                    return item.win_status !='0' && item.win_status !='4'
+                    // return item.win_status == '0' //TODO
                 })
 
             })
@@ -137,113 +155,112 @@ export default {
 </script>
 <style scoped>
     .history{
-        padding: 15px 0;
+        /* padding: 15px 0; */
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding-bottom: 15px;
+        overflow: auto;
         /* min-height: 100vh; */
         /* box-sizing: border-box; */
     }
     .item{
         width: 345px;
-        background: #F7F7F7;
-        border-radius: 8px;
+        background: #11093A;
         box-sizing: border-box;
-        margin: 15px auto 0 auto;
-        padding-left: 15px;
-        padding-bottom: 15px;
+        margin: 10px auto 0 auto;
+        
+        color: #D1D2D7;
+        border-radius: 8px;
     }
     ._ing{
-        background: #fff;
-        border: 1PX solid #F7924B;
-        box-shadow: 0 0 4px 0 rgba(150,150,150,0.5);
+        background: #170F52;
+        border: 1PX solid #8925E6;
     }
-    ._ed{
-        background: #F7F7F7;
-    }
+    /* ._ed{
+        background: #121728;
+    } */
     ._top{
         height: 40px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1PX solid #e1e1e1;
-    }
-    ._gameId{
-        color: #555555;
+        padding: 0 15px;
+        color: #fff;
         font-size: 14px;
+        border-bottom: 1PX dashed #585375;
+    }
+    ._ing ._top{
+        border-bottom: 1PX dashed #8925E6;
+    }
+    
+    .chosedNum{
+        width: 111px;
+        text-align: center;
+        border-right: 1PX solid #414D43;
+        /* padding: 14px 0; */
+    }
+    ._numimage{
+        width: 45px;
+        height: 50px;
+        display: block;
+        margin: 0 auto 6px auto;
+
     }
     .status{
         font-size: 14px;
         font-weight: 500;
         color: #F7924B;
-        padding-right: 15px;
         display: flex;
         align-items: center;
+        white-space: nowrap;
+        text-align: right;
     }
     ._lose{
-        color: #999999;
+        color: #858585;
     }
     ._draw{
-        color: #000;
+        color: #70CB11;
     }
     ._center{
-        margin-top: 10px;
-        padding-right: 15px;
+        padding: 15px 0;
     }
     .choseInfo{
         display: flex;
         align-items: center;
+        /* padding: 14px 0; */
         /* justify-content: space-between; */
     }
     ._bottom{
-        color: #555;
-        font-size: 11px;
-        border-top: 1PX solid #e1e1e1;
-        padding-top: 5px;
-        margin-top: 10px;
+        font-size: 12px;
+        padding: 8px 0 0 10px;
     }
     .info{
-        text-align: right;
-        margin-right: 28px;
+        margin-left: 15px;
     }
-    ._left{
-        text-align: left;
-        margin-right: 0;
-        width: 135px;
+    .info p{
+        margin-top: 10px;
     }
-    ._last{
-        margin-right: 0;
+    .info span{
+        font-weight: bold;
+        color: #fff;
     }
-    .info>p:first-of-type{
-        color: #555;
-        font-size: 12px;
-    }
-    .info>p:last-of-type{
-        color: #666;
-        font-size: 17px;
-        font-weight: 500;
-        margin-top: 5px;
-    }
-    ._ing .info>p:last-of-type{
-        color: #000;
-    }
+    
+    
+    
+    
     .gameInfo{
         display: flex;
+        background: #192037;
         justify-content: space-between;
-        color: #555;
+        padding: 8px 10px;
         font-size: 11px;
-        margin-top: 20px;
     }
-    ._ing .numChosed{
-        width: 30px;
-        height: 30px;
-        background: #26CBA0;
-        color: #fff !important;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .gameInfo span{
+        font-weight: bold;
+        color: #fff;
     }
-    ._ed .numChosed{
-        color: #000 !important;
-    }
+    
     ._numshow{
         display: flex;
         align-items: center;
@@ -269,9 +286,9 @@ export default {
         margin-right: 4px;
     }
     .divid{
-        color: #999;
+        color: #D4D1E1;
         font-size: 12px;
         text-align: center;
-        margin: 10px auto;
+        margin: 20px auto 10px auto;
     }
 </style>

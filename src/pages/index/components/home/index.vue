@@ -1,19 +1,20 @@
 <template>
     <div class="home">
         <div class="_top">
-            <img src="../../../../static/images/icon_home_logo.png" alt="GUESS" class="logo">
+            <img src="../../../../static/images/index1.png" alt="GUESS" class="logo">
+
             <div class="content">
                 <p>Guess the <span>last number</span> of the BTC price after {{time}} seconds</p>
                 <p>Picking the right number will win all participants' fees</p>
-                <p>Earn up to <span>₹{{total}}</span> if you win</p>
+                <p class="lastLine">Earn up to <span>₹{{total}}</span> if you win</p>
             </div>
             <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
                 <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
             </van-button>
             <van-button class="btn under" @click="goHistory" :loading="isLoading2" loading-text="loading...">
-                <p>GAME HISTORY</p>
-                <p class="_samll">&</p>
-                <p class="_samll">GAME IN PROGRESS</p>
+                <p>GAME HISTORY <span class="btn_span">& </span>GAME IN PROGRESS</p>
+                <!-- <p class="_samll"></p> -->
+                <!-- <p class="_samll"></p> -->
             </van-button>
             <!-- <div class="btn under" @click="goHistory">
                 <p>GAME HISTORY</p>
@@ -138,7 +139,6 @@ export default {
 </script>
 <style scoped>
     .home{
-        padding: 60px 15px 20px 15px;
         min-height: 100vh;
         box-sizing: border-box;
         display: flex;
@@ -150,45 +150,57 @@ export default {
     }
     .logo{
         display: block;
-        margin: auto;
-        width: 100px;
-        height: 83px;
+        margin: 20px auto 0 auto;
+        width: 368px;
+        height: 203px;
     }
     .content{
-        width: 255px;
-        margin: 50px auto;
+        width: 345px;
+        height: 180px;
+        background: url('../../../../static/images/textBg.png') no-repeat 100%/100%;
+        margin: 6px auto;
+        box-sizing: border-box;
+        padding-top: 10px;
     }
     .content>p{
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 500;
-        margin-top: 20px;
-        color: #4A5E94;
+        margin-top: 15px;
+        color: #5C91F3;
         text-align: center;
+    }
+    .content>p.lastLine{
+        font-size: 18px;
     }
     .content>p>span{
         color: #F7924B;
     }
     .btn{
         width: 345px;
-        height: 75px;
+        height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 8px;
         color: #fff;
         font-size: 17px;
-        background: #F7924B;
-        margin: auto;
+        background: linear-gradient(180deg, #BD26DB 0%, #620EB6 100%);;
+        margin: 15px auto;
         border:none;
+        font-weight: bold;
+    }
+    .btn_span{
+        font-size: 15px;
     }
     .under{
-        background: #4A5E94;
-        margin-top: 15px;
-        flex-direction: column;
+        background: linear-gradient(180deg, #5C91F3 0%, #0250E0 100%);
+        /* flex-direction: column; */
+        white-space: nowrap;
+
     }
     ._icon{
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         margin-right: 10px;
     }
     ._samll{
@@ -200,14 +212,15 @@ export default {
         text-align: center;
     }
     .link{
-        font-size: 12px;
-        color: #fff;
+        font-size: 14px;
+        color: #5C91F3;
         text-align: center;
         /* position: fixed; */
         /* padding-bottom: 30px; */
-        margin: auto auto 0 auto;
-        text-underline-offset: 4px;
-        text-decoration: underline;
+        margin: auto auto 25px auto;
+        font-weight: bold;
+        /* text-underline-offset: 4px; */
+        /* text-decoration: underline; */
     }
 
 </style>

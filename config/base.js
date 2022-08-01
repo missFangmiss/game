@@ -15,7 +15,7 @@ module.exports = {
         distIsForServer: false,
     },
     dev: {
-        port: 8848,
+        port: 8849,
         autoOpenBrowser: true,
         assetsSubDirectory: '',
         assetsPublicPath: '/',
