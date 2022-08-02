@@ -10,13 +10,36 @@
 
             <div :class="['_strip',{ing:newName!=''}]" v-if="status!=3">
                 <div class="flip">
-                    <p class="_waiting _front">
+                    <p class="_waiting">
                        <span v-if="status==0 || status==1">Need at least {{atLeastNum}} more players to start</span> 
                        <span v-if="status==2">The game will start in  <span class="wait_bold">{{waitTime}}</span>  seconds</span> 
                     </p>
-                    <p class="_waiting _back">New player : {{newName}} joins the game</p>
+                    <p class="_waiting back">New player : {{newName}} joins the game</p>
                 </div>
             </div>
+
+            <div class="numChooseBox">
+                <div v-for="(item,index) in list" :key="index" class="_numberBox" @click="onChooseNum(item.num,item.user_id)" v-show="(status==3&&item.user_id!='') || status!=3">
+                    <div class="_numImg" >
+                        <img v-if="item.user_id&&(item.user_id.split(',')[0]!=userId)" :src="'../../../../static/images/game/num'+index+'.png'" alt="" srcset="">
+                        <img v-if="chosedNum==item.num||(item.user_id&&(item.user_id.split(',')[0]==userId))" :src="'../../../../static/images/game/in'+index+'.png'" alt="" srcset="">
+                        <img v-else :src="'../../../../static/images/game/un'+index+'.png'" alt="">
+                    </div>
+                    <!-- <div :class="['shadow',{isNumShadow:luckyNum==item.num}]"></div> -->
+                    <p class="name">{{item.user_id | getName}}</p>
+                </div>
+            </div>
+
+            <div v-if="isChoosn">
+                <van-cell title="Your chosen number" value="" :border="false" class="boxCell" title-class="cellTitle">
+                    <p class="chosedNumber">{{chosedNum}}</p>
+                </van-cell>
+                <van-cell title="Player" :value="inNum" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Earn up to" :value="Number(inNum)<Number(minPerson)?'-':'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+            </div>
+            <p class="_tips" v-if="!isChoosn">Please click above to select a number</p>
+
+
 
 
             <div class="priceBox">
@@ -440,8 +463,67 @@ export default {
         font-size: 27px;
     }
     ._strip{
-        /* background: url('../../../../'); */
+        width: 345px;
+        height: 44px;
+        margin: 10px auto 35px auto;
+        transform-style:preserve-3d;
+        perspective:1000;
+        background: url('../../../../static/images/game/textBg.png') no-repeat 100%/100%;
     }
+    .flip{
+        position: relative;
+        transition:0.6s;
+        transform-style:preserve-3d;
+        width: 345px;
+        height: 44px;
+        /* transform-origin:100% 172px; */
+    }
+    ._waiting{
+        width: 345px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #fff;
+        position: absolute;
+        top:0;
+        left: 0;
+        right: 0;
+        backface-visibility:hidden;
+    }
+    .back{
+        color: #DC30B9;
+        transform:rotateX(-180deg);
+    }
+    .numChooseBox{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 5px;
+        row-gap: 15px;
+        margin-top: 35px;
+        min-height: 280px;
+        padding: 0 15px;
+        
+    }
+    ._numberBox{
+        width: 78px;
+    }
+    ._numImg>img{
+        width: 63px;
+        height: 67px;
+        margin: auto;
+        display: block;
+    }
+    ._tips{
+        color: #5C91F3;
+        font-size: 17px;
+        font-weight: 500;
+        margin: 15px;
+        text-align: center;
+    }
+    
 
 /* ----------------------------------------------------- */
 /* ----------------------------------------------------- */
@@ -541,29 +623,8 @@ export default {
         transform-style:preserve-3d;
         perspective:1000;
     }
-    .flip{
-        position: relative;
-        transition:0.6s;
-        transform-style:preserve-3d;
-        width: 345px;
-        height: 44px;
-        /* transform-origin:100% 172px; */
-    }
-    ._waiting{
-        width: 345px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        font-size: 14px;
-        color: #fff;
-        position: absolute;
-        top:0;
-        left: 0;
-        right: 0;
-        backface-visibility:hidden;
-    }
+    
+    
     .wait_bold{
         font-size: 16px;
         font-weight: bold;
