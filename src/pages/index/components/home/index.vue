@@ -10,11 +10,11 @@
             <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
                 <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
             </van-button>
-            <van-button class="btn under" @click="goHistory" :loading="isLoading2" loading-text="loading...">
+            <!-- <van-button class="btn under" @click="goHistory" :loading="isLoading2" loading-text="loading...">
                 <p>GAME HISTORY</p>
                 <p class="_samll">&</p>
                 <p class="_samll">GAME IN PROGRESS</p>
-            </van-button>
+            </van-button> -->
             <!-- <div class="btn under" @click="goHistory">
                 <p>GAME HISTORY</p>
                 <p class="_samll">&</p>
@@ -38,9 +38,6 @@ export default {
         [Button.name]: Button,
     },
     data(){
-        //17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51
-        //d72110bf669fc24a9dbc650e79a51b037ecb77bb665a4325fafc99e17382a3f1
-        //115f5f5dffe36eb737ba087ea751c6877a34817c4e807cc728e820293d5e8757
         return{
             time: '',
             total: '',
@@ -49,17 +46,28 @@ export default {
             token:'',
             isYet:1,//1非第一次 0第一次
             isLoading2:false,
+
+            merchantNo:'M202200001',
+            link_key:'M73G',
+            token:'17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51',
+            user_id:'DB61609742483835628',
+            mobile:'11111111111'
+            
         }
     },
     mounted(){
-        this.token = this.getQueryString('token');
-        if(!this.token){
-            this.$toast('NO IDENTIFY');
-            return;
-        }
-        // this.token = sessionStorage.getItem('utoken')
-        this.getConfig();
+        // try {
+        //     this.token = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetToken');
+        //     this.mobile = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetMobile') 
+        //     this.user_id = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetUserNo') 
+        //     this.getInfo();
+        // } catch (error) {
+        //     this.$toast('NO IDENTIFY');
+        //     return;
+        // }
+
         this.getInfo();
+        this.getConfig();
     },
     methods: {
         getQueryString(name) {//获取key
@@ -91,7 +99,14 @@ export default {
                 forbidClick:true,
                 duration:0
             })
-            h5GameIndex({route:'User_userInfo',token:this.token}).then(res=>{
+            h5GameIndex({
+                route:'User_userInfo',
+                token:this.token,
+                link_key:this.link_key,
+                user_id:this.user_id,
+                merchantNo:this.merchantNo,
+                mobile:this.mobile
+            }).then(res=>{
                 this.$toast.clear();
                 let info = res.respData;
                 sessionStorage.setItem('userId',info.user_id);

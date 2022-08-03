@@ -41,7 +41,7 @@ const service = axios.create({
 
 
 // 配置请求头
-service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'; 
+// service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'; 
 // 添加发送请求之前拦截器
 service.interceptors.request.use((config) => {
     let token = sessionStorage.getItem('token');
