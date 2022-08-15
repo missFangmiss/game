@@ -4,9 +4,9 @@
             <div class="priceBox">
                 <div class="price">
                     <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
-                    <div class="priceShow">{{price | notlastNum}} <p class="lastNum">{{price | lastNum}}</p></div>
+                    <div class="priceShow">{{price | notlastNum}} <p class="lastNum">{{price | lastNum}} </p></div>
                 </div>
-                <p class="desc" v-if="status!=3">Guess the last number of the BTC price after the game starts, Earn up to ₹{{total}} if win.</p>
+                <p class="desc" v-if="status!=3">Guess the last number of the BTC price after the game starts, Earn up to {{total}} coins if win.</p>
                 <div v-else>
                     <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
                     <p class="startDesc">Remaining Time</p>
@@ -35,7 +35,7 @@
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
                 <van-cell title="Player" :value="inNum" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
-                <van-cell title="Earn up to" :value="Number(inNum)<Number(minPerson)?'-':'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Earn up to" :value="(Number(inNum)<Number(minPerson)?'-':actualTotal)+' coins'" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
             </div>
             <p class="tips" v-if="!isChoosn">Please click above to select a number</p>
         </div>
@@ -45,7 +45,7 @@
                 <van-cell title="Your chosen number" :value="chosedNum" :border="false" class="boxCell" title-class="cellTitle">
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
-                <van-cell title="Invest" :value="'₹'+fee" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Invest" :value="fee+' coins'" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <van-cell title="Profit" :value="rate | profitGet" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <div class="popBtn" @click="handleChoose">Confirm</div>
             </div>
@@ -114,7 +114,7 @@ export default {
             gameId:'',      //
             newName:'',     //新加入的玩家名字
             name:'',        //最新的玩家名字
-            list:[{num:1},{num:2},{num:3},{num:4},{num:5},{num:6},{num:7},{num:8},{num:9},{num:0}]
+            list:[{num:0},{num:1},{num:2},{num:3},{num:4},{num:5},{num:6},{num:7},{num:8},{num:9}]
         }
     },
     computed:{
@@ -174,9 +174,11 @@ export default {
         noResponse(newValue,oldValue){
             if(newValue==2){
                 numTimeOut = setInterval(() => {
-                    let price = this.price.slice(0,this.price.length-1);
+                    let priceAll = localStorage.getItem('price')  || '23067.06';
+                    let price = priceAll.slice(0,priceAll.length-2);
                     let lastNum = Math.floor(Math.random()*10);
-                    this.price = price+lastNum;
+                    let lastNum2 = Math.floor(Math.random()*10);
+                    this.price = price+String(lastNum)+String(lastNum2);
                 }, 1000);
                 
             }else{
@@ -225,12 +227,12 @@ export default {
             }
         },
         onPrice(){
-            let timeNow = Date.parse(new Date()) - 2000;
-            h5GamePrice({timestamp:timeNow,rows:1,type:1,symbol:this.symbol}).then(res=>{
-                if(res.data.length>0){
+            h5GamePrice({route:'Game_immediatePrice'}).then(res=>{
+                if(res.respData&&res.respData.price){
                     this.noResponse = 0;
                     clearInterval(numTimeOut)
-                    this.price = String(res.data[0][1].toFixed(2));
+                    this.price = String(res.respData.price);
+                    localStorage.setItem('price',this.price )
                     if(this.status==3){
                         this.luckyNum  = this.price.slice(-1);
                     }
@@ -246,7 +248,7 @@ export default {
         getPrice(){
             priceTimeOut = setInterval(() => {
                 this.onPrice();
-            }, 1000);//TODO
+            }, 2000);//TODO
             
         },
         onCycle(){
@@ -259,7 +261,8 @@ export default {
                     this.status = resp.status;
                     if(resp.status=='2'){
                         let lastJoinTime = new Date(resp.latest_join_time.replace(/-/g,"/")).getTime();
-                        let nowTime = new Date().getTime();
+                        // let nowTime = new Date().getTime();
+                        let nowTime = new Date(resp.now_time.replace(/-/g,"/")).getTime()
                         let timeCharge = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
                         this.waitTime = timeCharge>0 ? timeCharge : 0;
                     }
@@ -294,12 +297,14 @@ export default {
                 if(resp.status=='2'){
                     this.name = resp.latest_join_user;
                     let lastJoinTime = new Date(resp.latest_join_time.replace(/-/g,"/")).getTime();
-                    let nowTime = new Date().getTime();
+                    // let nowTime = new Date().getTime();
+                    let nowTime = new Date(resp.now_time.replace(/-/g,"/")).getTime()
                     this.waitTime = (((info.wait_time*1000 + lastJoinTime) - nowTime) / 1000).toFixed(0);
                 }
                 if(resp.status=='3'){
                     let endTime = new Date(resp.end_time.replace(/-/g,"/")).getTime();
-                    let nowTime = new Date().getTime();
+                    // let nowTime = new Date().getTime();
+                    let nowTime = new Date(resp.now_time.replace(/-/g,"/")).getTime()
                     let lastTime = ((endTime - nowTime) / 1000).toFixed(0);
                     this.gameTimes = lastTime>0 ? lastTime : 0;
                 }
@@ -347,6 +352,7 @@ export default {
                 user_id:sessionStorage.getItem('userId'),
                 num:this.chosedNum
             }).then(res=>{
+                // H5ToNativeL.h5ToNativeL('DeepBox://Meta_Play->>{"Game":"Guess Number"}') 
                 this.$toast('SUCCESS');
                 this.show = false;
                 this.isChoosn = true;
@@ -595,7 +601,6 @@ export default {
         color: #888888;
         font-size: 12px;
         width: 78px;
-        height: 15px;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;

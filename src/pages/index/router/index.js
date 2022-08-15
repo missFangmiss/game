@@ -49,7 +49,7 @@ export default new Router({
         name: 'history',
         component:history,
         meta:{
-          title:'GAME HISTORY'
+          title:'HISTORY'
         }
     },
     {

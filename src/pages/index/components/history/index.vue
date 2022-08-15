@@ -1,7 +1,11 @@
 <template>
     <div class="history">
+        <div class="refresh" @click="onFinish">
+            <img src="../../../../static/images/refresh.png" alt="">
+        </div>
         <div class="divid" v-if="listIng.length>0 || listYet.length>0">—— GAME IN PROGRESS ——</div>
-        <div class="item  _ing" v-for="(item,index) in listYet" :key="index" @click="goGame(item.game_id)">
+        <div class="item  _ing" v-for="(item,index) in listYet" :key="index" >
+            <!-- @click="goGame(item.game_id)" -->
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
                 <p class="status _lose _draw"><span class="seconds">waiting</span></p>
@@ -10,12 +14,13 @@
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
                     <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
+                    <div class="info _last"><p>Amount</p> <p>{{item.amount}}</p></div>
                 </div>
             </div>
         </div>
 
-        <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" @click="goGame(item.game_id)">
+        <div class="item  _ing" v-for="(item) in listIng" :key="item.game_id" >
+            <!-- @click="goGame(item.game_id)" -->
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
                 <p class="status _lose _draw"><img src="../../../../static/images/icon_time.png" alt="time" class="_time"><van-count-down format="ss" :time="item.time" @finish="onFinish" /><span class="seconds">s</span></p>
@@ -24,13 +29,14 @@
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
                     <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info _last"><p>Amount</p> <p>₹{{item.amount}}</p></div>
+                    <div class="info _last"><p>Amount</p> <p>{{item.amount}}</p></div>
                 </div>
                 <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p></div>
             </div>
         </div>
         <div class="divid" v-if="listEd.length>0">—— GAME IN HISTORY ——</div>
-        <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id" @click="goResult(item.game_id)">
+        <div class="item  _ed" v-for="(item) in listEd" :key="item.game_id">
+             <!-- @click="goResult(item.game_id)" -->
             <div class="_top">
                 <p class="_gameId">{{item.game_id}}</p>
                 <!-- 1赢，2输，3平，5:等待-->
@@ -40,20 +46,21 @@
                 <div class="choseInfo">
                     <div class="info _left"><p>chosen number</p><p class="numChosed">{{item.num}}</p></div>
                     <div class="info"><p>Player</p><p>{{item.player_num}}</p></div>
-                    <div class="info"><p>Amount</p> <p> ₹{{item.amount}}</p></div>
-                    <div class="info _last"><p>Earning</p><p><span v-if="item.win_status==5">-</span> <span v-else> ₹{{item.earning}}</span></p></div>
+                    <div class="info"><p>Amount</p> <p> {{item.amount}}</p></div>
+                    <div class="info _last"><p>Earning</p><p><span v-if="item.win_status==5">-</span> <span v-else> {{item.earning}}</span></p></div>
                 </div>
                 <div class="gameInfo"><p>Opening Price: {{item.open_price}}</p><p class="_numshow">Closing Price: {{item.win_status==5 ?'- ' : item.close_price | notlastNum}} <span class="_lastNum" v-if="item.win_status!=5">{{item.close_price | lastNum}}</span></p></div>
             </div>
             <div class="_bottom">Closing Time: {{item.end_time}}</div>
         </div>
         <van-empty image="search" description="NO DATA" v-if="isNull">
-            <van-button round color="#4A5E94" @click="join" :loading="isLoading" loading-text="loading...">Join a Game</van-button>
+            <!-- <van-button round color="#4A5E94" @click="join" :loading="isLoading" loading-text="loading...">Join a Game</van-button> -->
         </van-empty>
     </div>
 </template>
 <script>
-import { h5GameRecord,h5GameSearch } from 'common@api/set.js'
+import { h5GameRecord,h5GameSearch,h5GameIndex } from 'common@api/set.js'
+
 import { Empty,Button,CountDown } from 'vant';
 export default {
     name: 'history',
@@ -68,13 +75,58 @@ export default {
             listEd:[],
             listYet:[],
             isNull:false,
-            isLoading:false
+            isLoading:false,
+
+            merchantNo:'M202200001',
+            token:'',
+            user_id:'',
+            mobile:''
         }
     },
     mounted(){
-        this.getList()
+        try {
+            this.token = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetToken');
+            this.mobile = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetMobile') 
+            this.user_id = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetUserNo') 
+            this.getInfo();
+        } catch (error) {
+            this.$toast('NO IDENTIFY');
+            this.token = "FB11F36750C3C0BF7242BC70601C190A";
+            this.mobile = "15715738177"
+            this.user_id = "DB72429715715738177"//"DB61609742483835628"
+            this.merchantNo = 'M202200001',
+            this.getList()
+            // return;
+        }
+        // this.getInfo();
+        
     },
     methods:{
+        getInfo(){
+            this.$toast({
+                message:'loading...',
+                type:'loading',
+                forbidClick:true,
+                duration:0
+            })
+            h5GameIndex({
+                route:'User_userInfo',
+                token:this.token,
+                link_key:this.merchantNo,
+                user_id:this.user_id,
+                mobile:this.mobile
+            }).then(res=>{
+                this.$toast.clear();
+                let info = res.respData;
+                sessionStorage.setItem('userId',info.user_id);
+                this.getList()
+                
+            }).catch(e=>{
+                // this.$toast.clear();
+                // this.$toast('CONFIG ERROR!')
+                return;
+            })
+        },
         onFinish(){
             this.getList()
         },
@@ -86,9 +138,10 @@ export default {
                     return item.win_status == '4'
                 })
                 //倒计时
-                let nowTime  = new Date().getTime();
+                // let nowTime  = new Date().getTime();
                 ingList.map(item=>{
                     let endTime = new Date(item.end_time.replace(/-/g,"/")).getTime();
+                    let nowTime = new Date(item.now_time.replace(/-/g,"/")).getTime();
                     item.time = ( endTime - nowTime)
                     return item;
                 })
@@ -138,8 +191,26 @@ export default {
 <style scoped>
     .history{
         padding: 15px 0;
+        background: #fff;
+        min-height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
         /* min-height: 100vh; */
         /* box-sizing: border-box; */
+    }
+    .refresh{
+        position: fixed;
+        right: 10px;
+        bottom: 20%;
+        border-radius: 50%;
+        background: rgb(247, 247, 247, 0.45);
+        padding: 5px;
+        box-shadow: 0px 0px 10px #8a8a8a;
+    }
+    .refresh>img{
+        width: 40px;
+        height: 40px;
     }
     .item{
         width: 345px;

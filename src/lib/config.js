@@ -11,7 +11,7 @@ import { Toast } from 'vant'
 let baseUrl = '';
 switch(process.env.ENV_CONFIG){
     case 'dev':
-        // baseUrl = 'http://gg.paulaoption.com/'
+        // baseUrl = 'https://gg.paulaoption.com/'
         //'http://147.139.34.208/guess/'
         //http://gg.paulaoption.com/
         baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
@@ -27,9 +27,9 @@ switch(process.env.ENV_CONFIG){
         baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
         break
     case 'prod':
-        baseUrl = 'https://gg.paulaoption.com/'
+        // baseUrl = 'https://gg.paulaoption.com/'
         //'http://147.139.34.208/guess/'
-        // baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
+        baseUrl = 'http://kg.zhongmakj.com/nzj/guess/'
         break
 }
 

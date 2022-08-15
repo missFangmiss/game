@@ -10,7 +10,7 @@
                     <img src="../../../../static/images/icon_wait.jpg" alt="" v-if="gameInfo.win_status==5">
                 </div>
                 <p class="status">{{gameInfo.win_status==1?'WIN':(gameInfo.win_status==2?'NOT VERY LUCKY':(gameInfo.win_status==5?'Waiting For Results':'DRAW'))}}</p>
-                <p class="status" v-if="gameInfo.win_status!=5">₹{{gameInfo.earning}}</p>
+                <p class="status" v-if="gameInfo.win_status!=5">{{gameInfo.earning}} coins</p>
                 <div class="info">
                     <div class="priceInfo">
                         <p class="title">Closing Price Number</p>
@@ -23,11 +23,12 @@
                         <p class="title">Your chosen number</p>
                         <p class="price priceChoosn"><span>{{gameInfo.num}}</span></p>
                         <p class="small">Player : {{gameInfo.player_num}}</p>
-                        <p class="small">Earn up to : ₹{{gameInfo.earning}}</p>
+                        <p class="small">Earn up to : {{gameInfo.earning}} coins</p>
                     </div>
                 </div>
                 <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading..."><img src="../../../../static/images/icon_again.png" alt="" class="again">{{gameInfo.win_status==5 ? 'Refresh' : 'PLAY AGAIN'}}</van-button>
                 <div class="link" @click="goHome">HOME</div>
+                <!-- {{res}} -->
             </div>
             
         </div>
@@ -56,7 +57,8 @@ export default {
                 "end_time": "",
                 "num": '',
                 "player_num": ''
-            }
+            },
+            res:{}
         }
     },
     beforeDestroy(){
@@ -95,11 +97,13 @@ export default {
                         if(this.waitTime<=5){
                             that.waitTime = this.waitTime+1;
                         }else{
+                            // that.res= JSON.stringify(res)
                             that.gameInfo = res.respData;
                             that.noResult = false;
                             clearInterval(resultTimeOut);
                         }
                     }else{
+                        // that.res= JSON.stringify(res)
                         clearInterval(resultTimeOut)
                         that.gameInfo = res.respData;
                         that.noResult = false;
@@ -118,6 +122,7 @@ export default {
             if(res.respData.close_price==''){
                 this.queryResult();
             }else{
+                // this.res = res
                 this.noResult = false;
                 this.gameInfo = res.respData;
             }
@@ -162,11 +167,13 @@ export default {
     .priceInfo{
         text-align: right;
         flex: 1;
-        color: #fff;
+        color: #333;
+        /* color: #fff; */
     }
     .chooseInfo{
         flex: 1;
-        color: #fff;
+        /* color: #fff; */
+        color: #333;
     }
     .title{
         font-size: 14px;
@@ -234,7 +241,8 @@ export default {
     }
      .link{
         font-size: 12px;
-        color: #fff;
+        /* color: #fff; */
+        color: #4A5E94;
         text-align: center;
         margin: auto;
         text-underline-offset: 4px;

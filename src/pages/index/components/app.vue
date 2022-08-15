@@ -1,7 +1,9 @@
 <template>
 	<div class="container" id="app">
 		<transition name="slide-fade">
-			<router-view ></router-view>
+			<keep-alive include="home">
+				<router-view  ></router-view>
+			</keep-alive>
 		</transition>
 	</div>
 </template>
@@ -36,7 +38,7 @@ export default {
 	#app{
 		width: 100%;
 		min-height: 100vh;
-		background: #101A2C;
+		/* background: #101A2C; */
 		max-width: 768px;
 		margin: auto;
 	}

@@ -49,11 +49,16 @@ export function h5GameRecord(data) {
 }
 
 export function h5GamePrice(data) {
+  // return request({
+  //   url: 'https://api.yjinvest.top/api/market/time-sharing',//TODO'https://testapi.okoption.top/api/market/time-sharing',
+  //   method: 'get',
+  //   params:data,
+  //   data:{}
+  // })
   return request({
-    url: 'https://api.yjinvest.top/api/market/time-sharing',//TODO'https://testapi.okoption.top/api/market/time-sharing',
-    method: 'get',
-    params:data,
-    data:{}
+    url: '/entry',//'https://api.yjinvest.top/api/market/time-sharing',//TODO'https://testapi.okoption.top/api/market/time-sharing',
+    method: 'post',
+    data
   })
 }
 

@@ -5,7 +5,7 @@
                 <img src="../../../../static/images/icon_win.png" alt="">
             </div>
             <p class="status">WIN</p>
-            <p class="status">₹{{actualTotal}}</p>
+            <p class="status">{{actualTotal}}</p>
             <div class="info">
                 <div class="priceInfo">
                     <p class="title">Closing Price Number</p>
@@ -18,7 +18,7 @@
                     <p class="title">Your chosen number</p>
                     <p class="price priceChoosn"><span>{{price | lastNum}}</span></p>
                     <p class="small">Player : {{inNum}}</p>
-                    <p class="small">Earn up to : ₹{{actualTotal}}</p>
+                    <p class="small">Earn up to : {{actualTotal}}</p>
                 </div>
             </div>
             <div class="btn" ><img src="../../../../static/images/icon_again.png" alt="" class="again">PLAY AGAIN</div>
@@ -30,7 +30,7 @@
                     <div class="priceTag"><img src="../../../../static/images/logo_BTC.png" alt="BTC">BTC Price</div>
                     <div class="priceShow">{{price | notlastNum}} <p class="lastNum">{{price | lastNum}}</p></div>
                 </div>
-                <p class="desc" v-if="status!=3">Guess the last number of the BTC price after the game starts, Earn up to ₹{{total}} if win.</p>
+                <p class="desc" v-if="status!=3">Guess the last number of the BTC price after the game starts, Earn up to {{total}} if win.</p>
                 <div v-else>
                     <p class="startDesc" style="margin-top:20px">Waiting for bonus number results</p>
                     <p class="startDesc">Remaining Time</p>
@@ -58,7 +58,7 @@
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
                 <van-cell title="Player" :value="inNum" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
-                <van-cell title="Earn up to" :value="'₹'+actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Earn up to" :value="actualTotal" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
             </div>
             <p class="tips" v-if="!isChoosn">Please click above to select a number</p>
         </div>
@@ -68,7 +68,7 @@
                 <van-cell title="Your chosen number" :value="chosedNum" :border="false" class="boxCell" title-class="cellTitle">
                     <p class="chosedNumber">{{chosedNum}}</p>
                 </van-cell>
-                <van-cell title="Invest" :value="'₹'+fee" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
+                <van-cell title="Invest" :value="fee" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <van-cell title="Profit" :value="rate | profitGet" :border="false" class="boxCell" title-class="cellTitle" value-class="cellValue"/>
                 <div class="popBtn">Confirm</div>
             </div>
@@ -607,11 +607,13 @@ export default {
     .priceInfo{
         text-align: right;
         flex: 1;
-        color: #fff;
+        color: #333;
+
     }
     .chooseInfo{
         flex: 1;
-        color: #fff;
+        color: #333;
+
     }
     .title{
         font-size: 14px;
@@ -672,7 +674,7 @@ export default {
     }
      .link{
         font-size: 12px;
-        color: #fff;
+        color: #333;
         text-align: center;
         margin: auto;
         text-underline-offset: 4px;

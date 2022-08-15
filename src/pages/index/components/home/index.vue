@@ -5,7 +5,7 @@
             <div class="content">
                 <p>Guess the <span>last number</span> of the BTC price after {{time}} seconds</p>
                 <p>Picking the right number will win all participants' fees</p>
-                <p>Earn up to <span>₹{{total}}</span> if you win</p>
+                <p>Earn up to <span>{{total}}</span> coins if you win</p>
             </div>
             <van-button class="btn" @click="joinGame" :loading="isLoading" loading-text="loading...">
                 <img src="../../../../static/images/icon_home_join.png" alt="JOIN" class="_icon">JOIN A GAME
@@ -23,7 +23,7 @@
         </div>
         <div>
             <!-- <div class="_act">Account Balance</div>
-            <div class="_act">₹{{account}}</div> -->
+            <div class="_act">{{account}}</div> -->
             <div class="link" @click="goExample">HOW TO PLAY</div>
         </div>
     </div>
@@ -46,27 +46,34 @@ export default {
             token:'',
             isYet:1,//1非第一次 0第一次
             isLoading2:false,
-
+            userId:'',
             merchantNo:'M202200001',
-            link_key:'M73G',
-            token:'17f55cc90adea4b53932ec34a7d12e838e8b199977eea8e25e026b73efb23b51',
-            user_id:'DB61609742483835628',
+            link_key:'',
+            token:'',
+            user_id:'',
             mobile:'11111111111'
             
         }
     },
+    created(){
+        console.log("1")
+    },
     mounted(){
-        // try {
-        //     this.token = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetToken');
-        //     this.mobile = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetMobile') 
-        //     this.user_id = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetUserNo') 
-        //     this.getInfo();
-        // } catch (error) {
-        //     this.$toast('NO IDENTIFY');
-        //     return;
-        // }
+        try {
+            this.token = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetToken');
+            this.mobile = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetMobile') 
+            this.user_id = H5ToNativeL.h5ToNativeL('DeepBox://Native_GetUserNo')
+            H5ToNativeL.h5ToNativeL('DeepBox://Meta_Enter->>{"Game":"Guess Number"}') 
+            this.getInfo();
+        } catch (error) {
+            this.token = '4967192138C51C89F3043135113D5405'//'4FB2381E0FBD89F89ABD8C36714A252F';
+            this.mobile = '1111111111'
+            this.user_id = 'DB48225254734192777'//'DB50500499478330876'
+            this.merchant = 'M202200001';
+            this.$toast('NO IDENTIFY');
+            this.getInfo();
+        }
 
-        this.getInfo();
         this.getConfig();
     },
     methods: {
@@ -92,7 +99,6 @@ export default {
             })
         },
         getInfo(){
-            // if(!!sessionStorage.getItem('userId')) return;
             this.$toast({
                 message:'loading...',
                 type:'loading',
@@ -102,14 +108,15 @@ export default {
             h5GameIndex({
                 route:'User_userInfo',
                 token:this.token,
-                link_key:this.link_key,
+                link_key:this.merchantNo,
                 user_id:this.user_id,
-                merchantNo:this.merchantNo,
+                // merchantNo:this.merchantNo,
                 mobile:this.mobile
             }).then(res=>{
                 this.$toast.clear();
                 let info = res.respData;
                 sessionStorage.setItem('userId',info.user_id);
+                this.userId = info.user_id;
                 this.isYet = info.is_first;
                 
             }).catch(e=>{
@@ -122,6 +129,7 @@ export default {
         joinGame() {
             if(!sessionStorage.getItem('userId')) return;
             if(!this.isYet){
+                this.isYet = 1;
                 h5Record({route:'User_isFirstHandle',user_id:sessionStorage.getItem('userId')}).then(res=>{
                     this.$router.push('/example')
                 })
@@ -216,7 +224,8 @@ export default {
     }
     .link{
         font-size: 12px;
-        color: #fff;
+        color: #4A5E94;
+        /* color: #fff; */
         text-align: center;
         /* position: fixed; */
         /* padding-bottom: 30px; */
